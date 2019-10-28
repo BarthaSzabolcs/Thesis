@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -16,7 +17,7 @@ public class AssetBundleManager : MonoBehaviour
     #region Hide in editor
 
     public AssetBundleManager Instance { get; set; }
-    public Dictionary<string, AssetBundle> Loaded { get; set; }
+    public Dictionary<string, AssetBundle> Loaded { get; set; } = new Dictionary<string, AssetBundle>();
     
     #endregion
 
@@ -33,7 +34,12 @@ public class AssetBundleManager : MonoBehaviour
         }
     }
 
-    public IEnumerator Load(string bundleName)
+    private void Start()
+    {
+        Test();
+    }
+
+    public IEnumerator Load(string bundleName, Action<AssetBundle> InitLoadedData)
     {
         if (Loaded.ContainsKey(bundleName))
             yield return null;
@@ -48,10 +54,18 @@ public class AssetBundleManager : MonoBehaviour
         yield return request.SendWebRequest();
 
         Loaded.Add(bundleName, DownloadHandlerAssetBundle.GetContent(request));
+
+        // ToDo - clean
+        InitLoadedData(Loaded[bundleName]);
     }
 
-    //IEnumerator InstantiateObject()
-    //{
-    //    GameObject canvas = bundle.LoadAsset<GameObject>("RecognizedObjectCanvas");
-    //}
+    public void Test()
+    {
+        StartCoroutine(Load("testbundle", 
+            (AssetBundle bundle) => 
+            {
+                var GO = bundle.LoadAsset<GameObject>("RecognizedObjectCanvas");
+                Instantiate(GO, Vector3.zero, Quaternion.identity);
+            }));    
+    }
 }

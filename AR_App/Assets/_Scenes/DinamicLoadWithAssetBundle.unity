@@ -130,6 +130,7 @@ GameObject:
   m_Component:
   - component: {fileID: 276855241}
   - component: {fileID: 276855242}
+  - component: {fileID: 276855243}
   m_Layer: 0
   m_Name: Loader
   m_TagString: Untagged
@@ -163,11 +164,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d797e6d85dc45a4fb11c40fb330c0cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: C:\Users\Szabi\Desktop\3D_Recognition\Assets\AssetBundles\testbundle
-  con: {fileID: 0}
+  con: {fileID: 11400000, guid: d43643cac8190f845a723eeedc2bfcd9, type: 2}
   fileName: C:\Users\Szabi\Desktop\Vuforia\Objects_OT
   trackableObject: {fileID: 7706366734120240574, guid: 0a8ec245ed3264243830a1c72f9d1c9e,
     type: 3}
+--- !u!114 &276855243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 276855240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aae2ef1ed169a504bb8202236dce5fe5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  con: {fileID: 11400000, guid: d43643cac8190f845a723eeedc2bfcd9, type: 2}
+  cachePath: D:\GitRepos\Thesis\AR_App\Assets\AssetBundles
 --- !u!1 &420896435
 GameObject:
   m_ObjectHideFlags: 0
