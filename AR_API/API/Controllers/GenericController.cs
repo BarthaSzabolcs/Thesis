@@ -1,6 +1,6 @@
 ﻿using DataAcces.Infrastructure;
 using DataAcces.Repositories;
-using DataModels;
+using DataAcces.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Web.Http;
@@ -18,11 +18,11 @@ namespace DemoAPI.Controllers
             return repo.GetAll();
         }
 
-        public T Get(int Id)
+        public T Get(int id)
         {
             var repo = new GenericRepository<T>(connectionFactory);
 
-            var item = repo.Get(Id);
+            var item = repo.Get(id);
 
             if (item != null)
             {

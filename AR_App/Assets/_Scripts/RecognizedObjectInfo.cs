@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DataAcces.Resources;
+using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -8,53 +10,59 @@ using UnityEngine;
 
 public class RecognizedObjectInfo : MonoBehaviour
 {
-    [SerializeField] private string uri;
-    [SerializeField] private TextMeshProUGUI descriptionTMP;
-    [SerializeField] private DefaultTrackableEventHandler trackableEventHandler;
+    #region Show in editor
 
+    [SerializeField] private ConnectionConfig con;
     [SerializeField] private float waitTime;
-    private int timer;
+
+    #endregion
+    #region Hide in editor
+
+    private float timer;
+    private bool triggered = false;
+    
+    #endregion
 
     private void Update()
     {
         try
         {
-            if (Time.time - timer > waitTime)
+            if (Time.time - timer > waitTime && triggered == false)
             {
-                int id = int.Parse(gameObject.transform.parent.name);
-
-                var info = GetObjectInfo(id);
-
-                if (info != null)
-                {
-                    descriptionTMP.text = string.Format("ID: {0}\nName: {1}\nDescription: {2}\n", 
-                        info.Id, info.Name, info.Description);
-                }
+                triggered = true;
+                StartCoroutine(Init());
             }
         }
         catch (Exception e)
         {
             Debug.Log(e.Message);
-            throw;
         }
     }
 
-    private RecognizedObject GetObjectInfo(int id)
+    private RecognizedObjectResource GetObjectInfo(int id)
     {
-        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format(uri, id));
+        var uri = con.server + "/Api/RecognizedObject/" + id;
+        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 
         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
         StreamReader reader = new StreamReader(response.GetResponseStream());
         string jsonResponse = reader.ReadToEnd();
-        RecognizedObject info = JsonUtility.FromJson<RecognizedObject>(jsonResponse);
-
-        return info;
+        
+        return JsonConvert.DeserializeObject<RecognizedObjectResource>(jsonResponse);
     }
-}
 
-public class RecognizedObject
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
+    private IEnumerator Init()
+    {
+        int id = int.Parse(gameObject.name);
+        var info = GetObjectInfo(id);
+
+        if (AssetBundleManager.Instance.Loaded.ContainsKey(info.Content.FileInfo.Name) == false)
+        {
+            yield return AssetBundleManager.Instance.Load(info.Content.FileInfo);
+        }
+        var assetBundle = AssetBundleManager.Instance.Loaded[info.Content.FileInfo.Name];
+
+        var go = assetBundle.LoadAsset<GameObject>(info.Content.Name);
+        Instantiate(go, Vector3.zero, Quaternion.identity, transform);
+    }
 }

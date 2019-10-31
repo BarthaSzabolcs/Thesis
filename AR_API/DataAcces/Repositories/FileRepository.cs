@@ -1,27 +1,33 @@
 ﻿using DataAcces.Infrastructure;
-using DataModels;
+using DataAcces.DataModels;
+using DataAcces.Resources;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAcces.ExtensionMethods;
 
 namespace DataAcces.Repositories
 {
-    public class FileRepository : GenericRepository<FilePath>
+    public class FileRepository : GenericRepository<DataModels.FileInfo>
     {
+
         public FileRepository(IConnectionFactory connectionFactory) : base(connectionFactory)
         {
         }
 
-        public bool DeleteFile(FilePath filePath)
+        public bool AddFile(DataModels.FileInfo fileInfo, byte[] fileData)
         {
-            if (File.Exists(filePath.Path))
+            var path = fileInfo.FilePath();
+
+            if (File.Exists(path) == false)
             {
                 try
                 {
-                    File.Delete(filePath.Path);
+                    File.WriteAllBytes(path, fileData);
 
                     return true;
                 }
@@ -30,15 +36,42 @@ namespace DataAcces.Repositories
                     return false;
                 }
             }
-
-            return false;
+            else
+            {
+                return false;
+            }
         }
 
-        public bool UpdateFile(FilePath filePath, byte[] fileData)
+        public bool DeleteFile(DataModels.FileInfo fileInfo)
         {
+            var path = fileInfo.FilePath();
+
+            if (File.Exists(path))
+            {
+                try
+                {
+                    File.Delete(path);
+
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateFile(DataModels.FileInfo fileInfo, byte[] fileData)
+        {
+            var path = fileInfo.FilePath();
+
             try
             {
-                File.WriteAllBytes(filePath.Path, fileData);
+                File.WriteAllBytes(path, fileData);
 
                 return true;
             }

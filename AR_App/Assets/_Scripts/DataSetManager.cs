@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using DataAcces.Resources;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -14,35 +15,46 @@ public class DataSetManager : MonoBehaviour
     #region Show in editor
 
     [Header("Connection:")]
-    [SerializeField] private ConnectionConfig con;
+    [SerializeField] private ConnectionConfig connection;
 
-    [Header("Dunno:")]
-    [SerializeField] private string fileName;
-    [SerializeField] private GameObject trackableObject;
+    [SerializeField] private GameObject trackablePrefab;
 
     #endregion
     #region Hide in editor
 
-    private Dictionary<string, RecognizedObject> objectInfos;
-    
+    public static DataSetManager Instance { get; private set; }
+
+    private Dictionary<string, RecognizedObjectResource> objectInfos;
+    private string CachePath => Path.Combine(Application.persistentDataPath, "DataSets");
+
     #endregion
 
-    void Start()
+    private void Awake()
     {
-        VuforiaBehaviour vb = FindObjectOfType<VuforiaBehaviour>();
-        // vb.StartEvent += LoadDataSet;
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+            Directory.CreateDirectory(CachePath);
 
-        // StartCoroutine(InstantiateObject());
+            DontDestroyOnLoad(gameObject);
+
+            // VuforiaBehaviour vb = FindObjectOfType<VuforiaBehaviour>();
+            // vb.StartEvent += LoadDataSet;
+        }
     }
 
-    void LoadDataSet()
+    void LoadDataSet(FileInfo info)
     {
         ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-        string dataPath = Path.Combine(/*Application.persistentDataPath,*/ fileName + ".xml");
+        string dataPathWithoutFileType = Path.Combine(Application.persistentDataPath, info.Name);
 
         DataSet dataSet = objectTracker.CreateDataSet();
 
-        if (dataSet.Load(dataPath, VuforiaUnity.StorageType.STORAGE_ABSOLUTE))
+        if (dataSet.Load(dataPathWithoutFileType + ".xml", VuforiaUnity.StorageType.STORAGE_ABSOLUTE))
         {
             objectTracker.Stop();
             objectInfos = GetDataSetInfo();
@@ -54,9 +66,9 @@ public class DataSetManager : MonoBehaviour
                 if (tb.name == "New Game Object")
                 {
                     tb.gameObject.name = tb.TrackableName;
-                    if (trackableObject != null)
+                    if (trackablePrefab != null)
                     {
-                        GameObject augmentation = Instantiate(trackableObject);
+                        GameObject augmentation = Instantiate(trackablePrefab);
 
                         augmentation.transform.parent = tb.gameObject.transform;
                         augmentation.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
@@ -64,7 +76,6 @@ public class DataSetManager : MonoBehaviour
                     InitTrackableInfo(tb.gameObject);
 
                     tb.gameObject.AddComponent<DefaultTrackableEventHandler>();
-                    // tb.gameObject.AddComponent<TurnOffBehaviour>();
                 }
             }
         }
@@ -74,18 +85,35 @@ public class DataSetManager : MonoBehaviour
         }
     }
 
+    private IEnumerator CacheFile(DataAcces.DataModels.FileInfo info)
+    {
+        string url = Path.Combine(CachePath, info.Name + ".xml");
+
+        if (File.Exists(url) == false)
+        {
+            url = connection.server + "/Api/File/" + info.Id;
+
+            var apiRequest = UnityWebRequest.Get(url);
+            yield return apiRequest.SendWebRequest();
+
+            url = Path.Combine(CachePath, info.Name);
+
+            File.WriteAllBytes(url, apiRequest.downloadHandler.data);
+        }
+    }
+
     // (Could browse the dataSet-s in the UI)
     // ToDo - Load info-s for the dataSet from the API /// param = string dataSetName
-    private Dictionary<string, RecognizedObject> GetDataSetInfo()
+    private Dictionary<string, RecognizedObjectResource> GetDataSetInfo()
     {
-        var uri = con.server + "/api/RecognizedObject/";
+        var uri = connection.server + "/api/RecognizedObject/";
         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format(uri));
 
         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
         StreamReader reader = new StreamReader(response.GetResponseStream());
         string jsonResponse = reader.ReadToEnd();
 
-        return JsonConvert.DeserializeObject<List<RecognizedObject>>(jsonResponse).
+        return JsonConvert.DeserializeObject<List<RecognizedObjectResource>>(jsonResponse).
             ToDictionary(x => x.Name, x => x);
     }
 
@@ -96,7 +124,8 @@ public class DataSetManager : MonoBehaviour
 
         if (objectInfos.TryGetValue(trackableObject.name, out var recognizedObject))
         {
-            text.text = recognizedObject.Description;
+            text.text = recognizedObject.Name;
         }
     }
+
 }

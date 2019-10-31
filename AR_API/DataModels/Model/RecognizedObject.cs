@@ -1,9 +1,9 @@
-﻿namespace DataModels
+﻿namespace DataAcces.DataModels
 {
     public class RecognizedObject : IDataModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
+        public int ContentId { get; set; }
     }
 }

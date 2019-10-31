@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DapperExtensions;
 using DataAcces.Infrastructure;
-using DataModels;
+using DataAcces.DataModels;
 
 namespace DataAcces.Repositories
 {
