@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7ad66cbe0c9f4445826bf569401c97e, type: 3}
   m_Name: Con_Mobile
   m_EditorClassIdentifier: 
-  server: http://196.164.137.1:8080
+  server: http://192.168.137.1:8080

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAcces.DataModels
+namespace DataModels
 {
     public interface IDataModel
     {

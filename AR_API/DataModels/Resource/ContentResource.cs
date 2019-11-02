@@ -1,11 +1,11 @@
-﻿using DataAcces.DataModels;
+﻿using DataModels;
 
-namespace DataAcces.Resources
+namespace DataResources
 {
     public class ContentResource : IDataModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public FileInfo FileInfo { get; set; }
+        public AssetBundle AssetBundle { get; set; }
     }
 }

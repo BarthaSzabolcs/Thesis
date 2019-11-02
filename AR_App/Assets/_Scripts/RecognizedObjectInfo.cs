@@ -1,4 +1,4 @@
-﻿using DataAcces.Resources;
+﻿using DataResources;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -56,11 +56,11 @@ public class RecognizedObjectInfo : MonoBehaviour
         int id = int.Parse(gameObject.name);
         var info = GetObjectInfo(id);
 
-        if (AssetBundleManager.Instance.Loaded.ContainsKey(info.Content.FileInfo.Name) == false)
+        if (AssetBundleManager.Instance.Loaded.ContainsKey(info.Content.AssetBundle.Name) == false)
         {
-            yield return AssetBundleManager.Instance.Load(info.Content.FileInfo);
+            yield return AssetBundleManager.Instance.Load(info.Content.AssetBundle);
         }
-        var assetBundle = AssetBundleManager.Instance.Loaded[info.Content.FileInfo.Name];
+        var assetBundle = AssetBundleManager.Instance.Loaded[info.Content.AssetBundle.Name];
 
         var go = assetBundle.LoadAsset<GameObject>(info.Content.Name);
         Instantiate(go, Vector3.zero, Quaternion.identity, transform);

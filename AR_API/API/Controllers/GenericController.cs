@@ -1,26 +1,26 @@
 ﻿using DataAcces.Infrastructure;
 using DataAcces.Repositories;
-using DataAcces.DataModels;
+using DataModels;
 using System;
 using System.Collections.Generic;
 using System.Web.Http;
 
 namespace DemoAPI.Controllers
 {
-    public abstract class GenericController<T> : ApiController where T : class, IDataModel
+    public abstract class GenericController<T> : ApiController where T : class, IDataModel, new()
     {
         private IConnectionFactory connectionFactory = new MySqlConnectionFactory();
 
         public IEnumerable<T> Get()
         {
-            var repo = new GenericRepository<T>(connectionFactory);
+            var repo = new SimpleRepository<T>(connectionFactory);
             
             return repo.GetAll();
         }
 
         public T Get(int id)
         {
-            var repo = new GenericRepository<T>(connectionFactory);
+            var repo = new SimpleRepository<T>(connectionFactory);
 
             var item = repo.Get(id);
 
@@ -36,7 +36,7 @@ namespace DemoAPI.Controllers
 
         public T Post(T item)
         {
-            var repo = new GenericRepository<T>(connectionFactory);
+            var repo = new SimpleRepository<T>(connectionFactory);
 
             item = repo.Add(item);
 
@@ -52,7 +52,7 @@ namespace DemoAPI.Controllers
 
         public void Put(int id, T item)
         {
-            var repo = new GenericRepository<T>(connectionFactory);
+            var repo = new SimpleRepository<T>(connectionFactory);
 
             if (repo.Update(item) == false)
             {
@@ -62,7 +62,7 @@ namespace DemoAPI.Controllers
 
         public void Delete(int id)
         {
-            var repo = new GenericRepository<T>(connectionFactory);
+            var repo = new SimpleRepository<T>(connectionFactory);
 
             if (repo.Delete(id) == false)
             {

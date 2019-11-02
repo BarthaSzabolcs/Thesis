@@ -1,7 +1,6 @@
-﻿using DataAcces.DataModels;
-using DataAcces.Infrastructure;
+﻿using DataAcces.Infrastructure;
 using DataAcces.Repositories;
-using DataAcces.Resources;
+using DataResources;
 using System.Collections.Generic;
 using System.Web.Http;
 

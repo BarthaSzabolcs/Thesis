@@ -1,4 +1,4 @@
-﻿namespace DataAcces.DataModels
+﻿namespace DataModels
 {
     public class RecognizedObject : IDataModel
     {

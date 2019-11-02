@@ -1,6 +1,6 @@
-﻿using DataAcces.DataModels;
+﻿using DataModels;
 
-namespace DataAcces.Resources
+namespace DataResources
 {
     public class RecognizedObjectResource : IDataModel
     {

@@ -1,5 +1,4 @@
-﻿using DataAcces.Resources;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +22,7 @@ public class AssetBundleManager : MonoBehaviour
     public static AssetBundleManager Instance { get; private set; }
     public Dictionary<string, AssetBundle> Loaded { get; set; } = new Dictionary<string, AssetBundle>();
 
-    private string CachePath => Path.Combine(Application.persistentDataPath, "AssetBundle");
+    private string CachePath => Path.Combine(Application.persistentDataPath, "AssetBundles");
     
     #endregion
 
@@ -43,28 +42,38 @@ public class AssetBundleManager : MonoBehaviour
     }
 
     // ToDo - Handle multiple loads of the same bundle
-    public IEnumerator Load(DataAcces.DataModels.FileInfo fileInfo)
+    public IEnumerator Load(DataModels.AssetBundle assetBundleInfo)
     {
-        if (Loaded.ContainsKey(fileInfo.Name))
+        if (Loaded.ContainsKey(assetBundleInfo.Name))
         {
             yield return null;
         }
 
-        string url = Path.Combine(CachePath, fileInfo.Name);
+        string url = Path.Combine(CachePath, assetBundleInfo.Name);
         if (File.Exists(url) == false)
         {
             Debug.Log(url + " checked. File not found.");
 
-            url = string.Format("{0}/Api/File/{1}", con.server, fileInfo.Id);
+            url = string.Format("{0}/Api/AssetBundle/{1}/File", con.server, assetBundleInfo.Id);
 
             Debug.Log("Download file from API: " + url);
             var apiRequest = UnityWebRequest.Get(url);
             yield return apiRequest.SendWebRequest();
 
-            url = Path.Combine(CachePath, fileInfo.Name);
+            url = Path.Combine(CachePath, assetBundleInfo.Name);
 
-            Debug.Log("Save file to local cache: " + url);
-            File.WriteAllBytes(url, apiRequest.downloadHandler.data);
+            var recievedData = apiRequest.downloadHandler.data;
+            if (recievedData.Length > 0)
+            {
+
+                File.WriteAllBytes(url, recievedData);
+                Debug.Log("Save file to local cache: " + url);
+            }
+            else
+            {
+                Debug.Log("File not found on the server");
+                yield return null;
+            }
         }
         else
         {
@@ -79,7 +88,7 @@ public class AssetBundleManager : MonoBehaviour
 
         if (assetBundle != null)
         {
-            Loaded.Add(fileInfo.Name, assetBundle);
+            Loaded.Add(assetBundleInfo.Name, assetBundle);
             Debug.Log("File load successful.");
         }
         else
