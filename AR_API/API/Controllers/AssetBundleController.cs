@@ -2,7 +2,6 @@
 using DataAcces.Repositories;
 using DataAcces.Repositories.FileAcces;
 using DataModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -36,7 +35,7 @@ namespace DemoAPI.Controllers
         public HttpResponseMessage GetFile(int id)
         {
             var repo = new FileAccesRepository<AssetBundle>(new MySqlConnectionFactory());
-            var result = new HttpResponseMessage(HttpStatusCode.NotFound);
+            var result = new HttpResponseMessage(HttpStatusCode.BadRequest);
 
             var (data, name) = repo.GetFile(id);
 
@@ -50,6 +49,10 @@ namespace DemoAPI.Controllers
                 result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
                 result.StatusCode = HttpStatusCode.OK;
+            }
+            else
+            {
+                result.StatusCode = HttpStatusCode.InternalServerError;
             }
 
             return result;

@@ -1,5 +1,6 @@
 ﻿using DataAcces.Infrastructure;
 using DataAcces.Repositories;
+using DataAcces.Repositories.FileAcces;
 using DataModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
-using DataAcces.Repositories.FileAcces;
 
 namespace DemoAPI.Controllers
 {
@@ -35,7 +35,7 @@ namespace DemoAPI.Controllers
         public HttpResponseMessage GetFile(int id, bool isXml = false)
         {
             var repo = new FileAccesRepository<DataSet>(new MySqlConnectionFactory());
-            var result = new HttpResponseMessage(HttpStatusCode.NotFound);
+            var result = new HttpResponseMessage(HttpStatusCode.InternalServerError);
 
             var (data, name) = repo.GetFile(id, isXml ? "xml" : "dat");
 
@@ -49,6 +49,10 @@ namespace DemoAPI.Controllers
                 result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
                 result.StatusCode = HttpStatusCode.OK;
+            }
+            else
+            {
+                result.StatusCode = HttpStatusCode.NotFound;
             }
 
             return result;

@@ -18,14 +18,15 @@ namespace DataAcces.Repositories.FileAcces
 
             var fileInfo = Get(id);
             if (fileInfo is null) return (null, null);
-            
+
             var path = fileInfo.FilePath(extension);
+            
             if (File.Exists(path))
             {
                 var dataBytes = File.ReadAllBytes(path);
                 var dataStream = new MemoryStream(dataBytes);
 
-                result.name = extension is null ? fileInfo.Name : fileInfo.Name + "." + extension;
+                result.name += extension is null ? fileInfo.Name : fileInfo.Name + "." + extension;
                 result.data = dataStream.ToArray();
             }
 
