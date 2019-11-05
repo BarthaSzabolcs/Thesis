@@ -12,14 +12,14 @@ namespace DataAcces.Repositories.FileAcces
         {
         }
 
-        public virtual (byte[] data, string name) GetFile(int id, string extension = null)
+        public virtual (byte[] data, string name) GetFile(int id, string subFolder = null, string extension = null)
         {
             (byte[] data, string name) result = (null, null);
 
             var fileInfo = Get(id);
             if (fileInfo is null) return (null, null);
 
-            var path = fileInfo.FilePath(extension);
+            var path = fileInfo.FilePath(subFolder: subFolder, extension: extension);
             
             if (File.Exists(path))
             {

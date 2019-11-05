@@ -16,10 +16,8 @@ public class DataSetManager : MonoBehaviour
 
     [Header("Test:")]
     [SerializeField] private int testDataSetIdx;
-
-    [Header("Connection:")]
-    [SerializeField] private ConnectionConfig con;
     [SerializeField] private GameObject trackablePrefab;
+    [SerializeField] private TMP_InputField dataSetID;
 
     #endregion
     #region Hide in editor
@@ -34,6 +32,8 @@ public class DataSetManager : MonoBehaviour
 
     #endregion
 
+    #region Unity Callbacks
+
     private void Awake()
     {
         if (Instance != null)
@@ -47,27 +47,45 @@ public class DataSetManager : MonoBehaviour
 
             Directory.CreateDirectory(CachePath);
 
-            VuforiaBehaviour vb = FindObjectOfType<VuforiaBehaviour>();
-            // ToDo - Remove
-            vb.StartEvent += () => StartCoroutine(Test());
+            //VuforiaBehaviour vb = FindObjectOfType<VuforiaBehaviour>();
+            //vb.StartEvent += () => 
         }
+    }
+    
+    #endregion
+
+    public void StartTest()
+    {
+        StartCoroutine(Test());
     }
 
     private IEnumerator Test()
     {
         yield return PossibleDataSets();
-        yield return LoadDataSet(dataSetModels[testDataSetIdx]);
+
+        if (int.TryParse(dataSetID.text, out int id) &&
+            dataSetModels.Any(x => x.Id == id))
+        {
+            yield return LoadDataSet(dataSetModels[dataSetModels.FindIndex(x => x.Id == id)]);
+        }
     }
     private IEnumerator PossibleDataSets()
     {
-        var url = string.Format("{0}/Api/DataSet", con.server);
+        var url = string.Format("{0}/Api/DataSet", ConnectionManager.Instance.Con);
         var apiRequest = UnityWebRequest.Get(url);
 
-        Debug.Log("Get all DataSets.\n" + url);
+        UILog.Instance.WriteLn($"Reqeust DataSets:\nurl:{url}");
         yield return apiRequest.SendWebRequest();
 
         var jsonResponse = apiRequest.downloadHandler.text;
         dataSetModels = JsonConvert.DeserializeObject<List<DataModels.DataSet>>(jsonResponse);
+
+        UILog.Instance.Write("DataSets on the server:\n");
+        foreach (var dataSetModel in dataSetModels)
+        {
+            UILog.Instance.Write($"Id: {dataSetModel.Id}\tName: '{dataSetModel.Name}'\n", "");
+        }
+        UILog.Instance.Write("=======================\n\n", "");
     }
 
     private IEnumerator LoadDataSet(DataModels.DataSet dataSetModel)
@@ -78,30 +96,43 @@ public class DataSetManager : MonoBehaviour
 
         var path = Path.Combine(CachePath, dataSetModel.Name + ".xml");
         DataSet dataSet = objectTracker.CreateDataSet();
+
         if (dataSet.Load(path, VuforiaUnity.StorageType.STORAGE_ABSOLUTE))
         {
+            UILog.Instance.WriteLn($"Loading DataSet { dataSetModel.Name } succeded.", Color.green);
+
             objectTracker.Stop();
+
+            if (objectTracker.ActivateDataSet(dataSet) == false)
+            {
+                UILog.Instance.WriteLn($"Could not activate DataSet { dataSetModel.Name }.", Color.red);
+            }
+            else
+            {
+                UILog.Instance.WriteLn($"DataSet { dataSetModel.Name } activated.", Color.green);
+            }
+
+            objectTracker.Start();
 
             var trackables = TrackerManager.Instance.GetStateManager().GetTrackableBehaviours();
 
             foreach (TrackableBehaviour trackable in trackables)
             {
+                UILog.Instance.WriteLn($"Loading Trackable '{ trackable.TrackableName }' succeded.");
+
                 if (trackable.name == "New Game Object")
                 {
                     trackable.gameObject.name = trackable.TrackableName;
                     trackable.gameObject.AddComponent<DefaultTrackableEventHandler>();
 
                     var contentHandler = trackable.gameObject.AddComponent<ContentHandler>();
-                    contentHandler.Con = con;
                     StartCoroutine(contentHandler.Initialize());
                 }
             }
-
-            Debug.Log("Load " + dataSetModel.Name + " succeded.");
         }
         else
         {
-            Debug.Log("Load " + dataSetModel.Name + " failed.");
+            UILog.Instance.WriteLn($"Loading DataSet { dataSetModel.Name } failed.", Color.red);
         }
     }
     private IEnumerator CacheDataSetFiles(DataModels.DataSet dataSetModel)
@@ -112,95 +143,37 @@ public class DataSetManager : MonoBehaviour
         {
             yield return CacheFile(dataSetModel, true);
         }
+        else
+        {
+            UILog.Instance.WriteLn($"{ url }.xml found on device.", Color.green);
+        }
         if (File.Exists(url + ".dat") == false)
         {
             yield return CacheFile(dataSetModel, false);
         }
+        else
+        {
+            UILog.Instance.WriteLn($"{ url }.dat found on device.", Color.green);
+        }
     }
     private IEnumerator CacheFile(DataModels.DataSet dataSetModel, bool isXml)
     {
-        var url = string.Format("{0}/api/DataSet/{1}/File?isXml={2}", con.server, dataSetModel.Id, isXml); 
+        var url = string.Format("{0}/api/DataSet/{1}/File?isXml={2}", ConnectionManager.Instance.Con, dataSetModel.Id, isXml);
 
-        var apiRequest = UnityWebRequest.Get(url);
-        yield return apiRequest.SendWebRequest();
+        UILog.Instance.WriteLn($"Download File: {dataSetModel.Name + (isXml ? ".xml" : ".dat")}\nurl: { url }");
+        var request = UnityWebRequest.Get(url);
+        yield return request.SendWebRequest();
 
-        if (apiRequest.downloadHandler.data.Length > 0)
+        if (request.downloadHandler.data.Length > 0)
         {
             var path = Path.Combine(CachePath, dataSetModel.Name + (isXml ? ".xml" : ".dat"));
 
-            File.WriteAllBytes(path, apiRequest.downloadHandler.data);
-            Debug.Log("File " + dataSetModel.Name + (isXml ? ".xml" : ".dat") + "is cached to:\n" + path);
+            File.WriteAllBytes(path, request.downloadHandler.data);
+            UILog.Instance.WriteLn($"File { dataSetModel.Name } { (isXml ? ".xml" : ".dat") } is cached to:\n{ path}", Color.green);
         }
         else
         {
-            Debug.Log("File " + dataSetModel.Name + " was not found on the server.");
+            UILog.Instance.WriteLn($"Could not get { dataSetModel.Name } from the server.", Color.red);
         }
     }
-
-    // Trash
-
-    //// (Could browse the dataSet-s in the UI)
-    //// ToDo - Load info-s for the dataSet from the API /// param = string dataSetName
-    //private Dictionary<string, RecognizedObjectResource> GetRecognizedObjects()
-    //{
-    //    var uri = con.server + "/api/RecognizedObject/";
-    //    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(string.Format(uri));
-
-    //    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-    //    StreamReader reader = new StreamReader(response.GetResponseStream());
-    //    string jsonResponse = reader.ReadToEnd();
-
-    //    return JsonConvert.DeserializeObject<List<RecognizedObjectResource>>(jsonResponse).
-    //        ToDictionary(x => x.Name, x => x);
-    //}
-
-
-    //void LoadDataSet(DataModels.DataSet dataSetModel)
-    //{
-    //    ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-    //    string dataPathWithoutFileType = Path.Combine(Application.persistentDataPath, dataSetModel.Name);
-
-    //    DataSet dataSet = objectTracker.CreateDataSet();
-
-    //    if (dataSet.Load(dataPathWithoutFileType + ".xml", VuforiaUnity.StorageType.STORAGE_ABSOLUTE))
-    //    {
-    //        objectTracker.Stop();
-    //        objectInfos = GetRecognizedObjects();
-
-    //        IEnumerable<TrackableBehaviour> tbs = TrackerManager.Instance.GetStateManager().GetTrackableBehaviours();
-
-    //        foreach (TrackableBehaviour tb in tbs)
-    //        {
-    //            if (tb.name == "New Game Object")
-    //            {
-    //                tb.gameObject.name = tb.TrackableName;
-    //                if (trackablePrefab != null)
-    //                {
-    //                    GameObject augmentation = Instantiate(trackablePrefab);
-
-    //                    augmentation.transform.parent = tb.gameObject.transform;
-    //                    augmentation.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
-    //                }
-    //                InitTrackableInfo(tb.gameObject);
-
-    //                tb.gameObject.AddComponent<DefaultTrackableEventHandler>();
-    //            }
-    //        }
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("Failed to load dataset.");
-    //    }
-    //}
-
-    //private void InitTrackableInfo(GameObject trackableObject)
-    //{
-    //    var textGO = trackableObject.transform.GetChild(0).GetChild(0);
-    //    var text = textGO.GetComponent<TextMeshProUGUI>();
-
-    //    if (objectInfos.TryGetValue(trackableObject.name, out var recognizedObject))
-    //    {
-    //        text.text = recognizedObject.Name;
-    //    }
-    //}
 }

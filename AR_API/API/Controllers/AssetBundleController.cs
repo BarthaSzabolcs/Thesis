@@ -2,6 +2,7 @@
 using DataAcces.Repositories;
 using DataAcces.Repositories.FileAcces;
 using DataModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -32,12 +33,15 @@ namespace DemoAPI.Controllers
 
         [HttpGet]
         [Route("{id}/File")]
-        public HttpResponseMessage GetFile(int id)
+        public HttpResponseMessage GetFile(int id, Platform platform)
         {
             var repo = new FileAccesRepository<AssetBundle>(new MySqlConnectionFactory());
-            var result = new HttpResponseMessage(HttpStatusCode.BadRequest);
+            var result = new HttpResponseMessage(HttpStatusCode.NotFound);
 
-            var (data, name) = repo.GetFile(id);
+            if (Enum.IsDefined(typeof(Platform), platform) == false)
+                return result;
+
+            var (data, name) = repo.GetFile(id, subFolder: platform.ToString());
 
             if (data != null)
             {
@@ -58,4 +62,10 @@ namespace DemoAPI.Controllers
             return result;
         }
     }
+}
+
+public enum Platform
+{
+    Standalone,
+    Android
 }

@@ -13,9 +13,6 @@ public class AssetBundleManager : MonoBehaviour
     [SerializeField] string wantedAssetBundleName;
     [SerializeField] int wantedAssetBundleId;
 
-    [Header("Connection:")]
-    [SerializeField] private ConnectionConfig con;
-
     #endregion
     #region Hide in editor
 
@@ -23,8 +20,10 @@ public class AssetBundleManager : MonoBehaviour
     public Dictionary<string, AssetBundle> Loaded { get; set; } = new Dictionary<string, AssetBundle>();
 
     private string CachePath => Path.Combine(Application.persistentDataPath, "AssetBundles");
-    
+
     #endregion
+
+    #region Unity Callbacks
 
     private void Awake()
     {
@@ -35,28 +34,38 @@ public class AssetBundleManager : MonoBehaviour
         else
         {
             Instance = this;
-            Directory.CreateDirectory(CachePath);
-            
             DontDestroyOnLoad(gameObject);
+
+            Directory.CreateDirectory(CachePath);
         }
     }
+    
+    #endregion
 
     // ToDo - Handle multiple loads of the same bundle
     public IEnumerator Load(DataModels.AssetBundle assetBundleInfo)
     {
+        UILog.Instance.WriteLn($"Load AssetBundle { assetBundleInfo.Name }.");
+
         if (Loaded.ContainsKey(assetBundleInfo.Name))
         {
+            UILog.Instance.WriteLn($"AssetBundle { assetBundleInfo.Name } is already loaded.", Color.green);
             yield return null;
         }
 
         string url = Path.Combine(CachePath, assetBundleInfo.Name);
         if (File.Exists(url) == false)
         {
-            Debug.Log(url + " checked. File not found.");
+            UILog.Instance.WriteLn(url + " checked. Cached file not found.");
 
-            url = string.Format("{0}/Api/AssetBundle/{1}/File", con.server, assetBundleInfo.Id);
+#if UNITY_ANDROID && !UNITY_EDITOR
+            url = "{0}/Api/AssetBundle/{1}/File?platform=1";
+#else
+            url = "{0}/Api/AssetBundle/{1}/File?platform=0";
+#endif
+            url = string.Format(url, ConnectionManager.Instance.Con, assetBundleInfo.Id);
 
-            Debug.Log("Download file from API: " + url);
+            UILog.Instance.WriteLn($"Download file from url:\n{url}");
             var apiRequest = UnityWebRequest.Get(url);
             yield return apiRequest.SendWebRequest();
 
@@ -67,20 +76,24 @@ public class AssetBundleManager : MonoBehaviour
             {
 
                 File.WriteAllBytes(url, recievedData);
-                Debug.Log("Save file to local cache: " + url);
+                UILog.Instance.WriteLn("Save file to local cache: " + url, Color.green);
             }
             else
             {
-                Debug.Log("File not found on the server");
+                UILog.Instance.WriteLn("File not found on the server", Color.red);
                 yield return null;
             }
         }
         else
         {
-            Debug.Log(url + " checked. File found.");
+            UILog.Instance.WriteLn(url + " checked. Cached file found.", Color.green);
         }
 
-        Debug.Log("Load file from memory: " + url);
+#if UNITY_ANDROID
+        url = "file://" + url;
+#endif
+
+        UILog.Instance.WriteLn($"Load AssetBundle { assetBundleInfo.Name } from memory:\n{url}");
         var memoryRequest = UnityWebRequestAssetBundle.GetAssetBundle(url);
         yield return memoryRequest.SendWebRequest();
 
@@ -89,11 +102,11 @@ public class AssetBundleManager : MonoBehaviour
         if (assetBundle != null)
         {
             Loaded.Add(assetBundleInfo.Name, assetBundle);
-            Debug.Log("File load successful.");
+            UILog.Instance.WriteLn($"Load of AssetBundle { assetBundleInfo.Name } successful.", Color.green);
         }
         else
         {
-            Debug.Log("File load failed.");
+            UILog.Instance.WriteLn($"Load of AssetBundle { assetBundleInfo.Name } failed.", Color.red);
         }
     }
 

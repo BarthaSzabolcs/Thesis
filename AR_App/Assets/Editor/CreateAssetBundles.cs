@@ -3,10 +3,10 @@ using System.IO;
 
 public class CreateAssetBundles
 {
-    [MenuItem("Assets/Build AssetBundles")]
-    static void BuildAllAssetBundles()
+    [MenuItem("Assets/Build AssetBundles/Windows")]
+    static void BuildAllAssetBundlesWindows()
     {
-        string assetBundleDirectory = "Assets/AssetBundles";
+        string assetBundleDirectory = "Assets/AssetBundles/Windows";
         if (!Directory.Exists(assetBundleDirectory))
         {
             Directory.CreateDirectory(assetBundleDirectory);
@@ -14,5 +14,18 @@ public class CreateAssetBundles
         BuildPipeline.BuildAssetBundles(assetBundleDirectory,
                                         BuildAssetBundleOptions.None,
                                         BuildTarget.StandaloneWindows);
+    }
+
+    [MenuItem("Assets/Build AssetBundles/Android")]
+    static void BuildAllAssetBundlesAndroid()
+    {
+        string assetBundleDirectory = "Assets/AssetBundles/Android";
+        if (!Directory.Exists(assetBundleDirectory))
+        {
+            Directory.CreateDirectory(assetBundleDirectory);
+        }
+        BuildPipeline.BuildAssetBundles(assetBundleDirectory,
+                                        BuildAssetBundleOptions.None,
+                                        BuildTarget.Android);
     }
 }

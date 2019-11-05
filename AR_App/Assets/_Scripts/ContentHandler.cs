@@ -18,8 +18,6 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
     #endregion
     #region Hide in editor
 
-    public ConnectionConfig Con { get; set; }
-
     private bool visible;
     private bool Visible
     {
@@ -31,10 +29,13 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
                 if (value)
                 {
                     OnTrackingStart?.Invoke();
+
+                    UILog.Instance.WriteLn($"Object found:\nId:{recognizedObject?.Id} Name: {recognizedObject?.Name}", Color.magenta);
                 }
                 else
                 {
                     OnTrackingEnd?.Invoke();
+                    UILog.Instance.WriteLn($"Object lost:\nId:{recognizedObject?.Id} Name: {recognizedObject?.Name}", Color.magenta);
                 }
             }
             visible = value;
@@ -76,6 +77,7 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
 
             if (recognizedObject != null)
             {
+                UILog.Instance.WriteLn($"RecognizedObject info found on server with an id of {id}", Color.green);
                 yield return AssetBundleManager.Instance.Load(recognizedObject.Content.AssetBundle);
 
                 var assetBundle = AssetBundleManager.Instance.Loaded[recognizedObject.Content.AssetBundle.Name];
@@ -85,18 +87,18 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
             }
             else
             {
-                Debug.Log("Could not found recognized object with an id of " + id);
+                UILog.Instance.WriteLn($"RecognizedObject info not found on server with an id of {id}", Color.red);
             }
         }
         else
         {
-            Debug.Log("Could not parse the name of the trackable as an int.");
+            UILog.Instance.WriteLn("Could not parse the name of the trackable as an int.\nFix the DataSet.", Color.red);
         }
     }
 
     private IEnumerator GetRecognizedObject(int id)
     {
-        var url = string.Format("{0}/api/RecognizedObject/{1}", Con.server, id);
+        var url = string.Format("{0}/api/RecognizedObject/{1}", ConnectionManager.Instance.Con, id);
 
         var request = UnityWebRequest.Get(url);
         yield return request.SendWebRequest();

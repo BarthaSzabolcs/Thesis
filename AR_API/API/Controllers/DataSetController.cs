@@ -37,7 +37,7 @@ namespace DemoAPI.Controllers
             var repo = new FileAccesRepository<DataSet>(new MySqlConnectionFactory());
             var result = new HttpResponseMessage(HttpStatusCode.InternalServerError);
 
-            var (data, name) = repo.GetFile(id, isXml ? "xml" : "dat");
+            var (data, name) = repo.GetFile(id, extension: isXml ? "xml" : "dat");
 
             if (data != null)
             {
