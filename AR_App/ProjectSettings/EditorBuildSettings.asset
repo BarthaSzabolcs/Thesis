@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_Scenes/DinamicLoad.unity
+    path: Assets/_Scenes/LoadFromApi.unity
     guid: 70518d664af73c34d9f1ef35430d57cf
   m_configObjects: {}

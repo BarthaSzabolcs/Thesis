@@ -12,8 +12,8 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
 
     public delegate void TrackingChanged();
 
-    public TrackingChanged OnTrackingStart;
-    public TrackingChanged OnTrackingEnd;
+    public event TrackingChanged OnTrackingStart;
+    public event TrackingChanged OnTrackingEnd;
 
     #endregion
     #region Hide in editor
@@ -98,6 +98,7 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
 
     private IEnumerator GetRecognizedObject(int id)
     {
+        //ToDo - Offline version
         var url = string.Format("{0}/api/RecognizedObject/{1}", ConnectionManager.Instance.Con, id);
 
         var request = UnityWebRequest.Get(url);

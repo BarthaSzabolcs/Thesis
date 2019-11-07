@@ -9,5 +9,6 @@ namespace DataModels
     public interface IDataModel
     {
         int Id { get; set; }
+        DateTime Modified { get; set; }
     }
 }

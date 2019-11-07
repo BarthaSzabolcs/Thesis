@@ -1,4 +1,5 @@
 ﻿using DataModels;
+using System;
 
 namespace DataResources
 {
@@ -7,5 +8,6 @@ namespace DataResources
         public int Id { get; set; }
         public string Name { get; set; }
         public AssetBundle AssetBundle { get; set; }
+        public DateTime Modified { get; set; }
     }
 }

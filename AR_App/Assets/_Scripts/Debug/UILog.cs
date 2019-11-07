@@ -81,10 +81,15 @@ public class UILog : MonoBehaviour
 
     private void LogCallback(string condition, string stackTrace, LogType type)
     {
-        if (type == LogType.Exception)
+        if (type == LogType.Exception || type == LogType.Error)
         {
             Write(condition + "\n", Color.red);
             WriteLn(stackTrace, Color.red);
+        }
+        else if(type == LogType.Warning)
+        {
+            Write(condition + "\n", Color.yellow);
+            WriteLn(stackTrace, Color.yellow);
         }
     }
 

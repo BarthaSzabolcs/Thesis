@@ -71,6 +71,7 @@ public class DataSetManager : MonoBehaviour
     }
     private IEnumerator PossibleDataSets()
     {
+        //ToDo - Offline version
         var url = string.Format("{0}/Api/DataSet", ConnectionManager.Instance.Con);
         var apiRequest = UnityWebRequest.Get(url);
 
@@ -92,6 +93,7 @@ public class DataSetManager : MonoBehaviour
     {
         ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
 
+        //ToDo - Offline version
         yield return CacheDataSetFiles(dataSetModel);
 
         var path = Path.Combine(CachePath, dataSetModel.Name + ".xml");
@@ -139,6 +141,7 @@ public class DataSetManager : MonoBehaviour
     {
         string url = Path.Combine(CachePath, dataSetModel.Name);
 
+        //ToDo - Offline version
         if (File.Exists(url + ".xml") == false)
         {
             yield return CacheFile(dataSetModel, true);
@@ -147,6 +150,7 @@ public class DataSetManager : MonoBehaviour
         {
             UILog.Instance.WriteLn($"{ url }.xml found on device.", Color.green);
         }
+        //ToDo - Offline version
         if (File.Exists(url + ".dat") == false)
         {
             yield return CacheFile(dataSetModel, false);
@@ -158,6 +162,7 @@ public class DataSetManager : MonoBehaviour
     }
     private IEnumerator CacheFile(DataModels.DataSet dataSetModel, bool isXml)
     {
+        //ToDo - Offline version
         var url = string.Format("{0}/api/DataSet/{1}/File?isXml={2}", ConnectionManager.Instance.Con, dataSetModel.Id, isXml);
 
         UILog.Instance.WriteLn($"Download File: {dataSetModel.Name + (isXml ? ".xml" : ".dat")}\nurl: { url }");

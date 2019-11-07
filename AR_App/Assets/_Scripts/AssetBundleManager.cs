@@ -54,7 +54,7 @@ public class AssetBundleManager : MonoBehaviour
         }
 
         string url = Path.Combine(CachePath, assetBundleInfo.Name);
-        if (File.Exists(url) == false)
+        if (File.Exists(url) == false) // ToDo - and there is connection, else could not load
         {
             UILog.Instance.WriteLn(url + " checked. Cached file not found.");
 
