@@ -12,14 +12,14 @@ using UnityEngine;
 
 namespace Repository
 {
-    public class CachedRepository<T> : IRepository 
+    public class ResourceRepository<T> : IRepository 
         where T : IDataModel, new()
     {
         private string tableName;
         private List<KeyValuePair<PropertyInfo, string>> coloumns = new List<KeyValuePair<PropertyInfo, string>>();
         private IDbConnection con;
 
-        public CachedRepository()
+        public ResourceRepository()
         {
             con = new SqliteConnection("Data Source=" + Path.Combine(Application.persistentDataPath, "Cache.db"));
 

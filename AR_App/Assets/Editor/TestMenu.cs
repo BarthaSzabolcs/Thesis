@@ -17,14 +17,13 @@ namespace Assets.Editor
         [MenuItem("Tests/SQLite/CreateStatement")]
         static void TestCreate()
         {
-            var con = new SqliteConnection("Data Source=C:\\Users\\Szabi\\AppData\\LocalLow\\Bartha\\AR_App\\SQLite\\RecognizedObjectInfo.db;");
-            var repo = new CachedRepository<RecognizedObject>(con);
+            var repo = new CachedRepository<RecognizedObject>();
         }
 
         [MenuItem("Tests/SQLite/InsertStatement")]
         static void TestInsert()
         {
-            var repo = new CachedRepository<RecognizedObject>(null);
+            var repo = new CachedRepository<RecognizedObject>();
 
             var list = new List<RecognizedObject>();
 
@@ -55,9 +54,7 @@ namespace Assets.Editor
         [MenuItem("Tests/SQLite/SelectStatement")]
         static void TestSelect()
         {
-            var con = new SqliteConnection("Data Source=C:\\Users\\Szabi\\AppData\\LocalLow\\Bartha\\AR_App\\SQLite\\RecognizedObjectInfo.db;");
-
-            var repo = new CachedRepository<RecognizedObject>(con);
+            var repo = new CachedRepository<RecognizedObject>();
             var list = repo.GetAll();
 
             var str = "";
@@ -72,9 +69,7 @@ namespace Assets.Editor
         [MenuItem("Tests/SQLite/UpdateStatment")]
         static void TestUpdate()
         {
-            var con = new SqliteConnection("Data Source=C:\\Users\\Szabi\\AppData\\LocalLow\\Bartha\\AR_App\\SQLite\\RecognizedObjectInfo.db;");
-
-            var repo = new CachedRepository<RecognizedObject>(con);
+            var repo = new CachedRepository<RecognizedObject>();
 
             var list = new List<RecognizedObject>();
 

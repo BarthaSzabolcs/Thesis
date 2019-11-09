@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Repository;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +20,7 @@ public class AssetBundleManager : MonoBehaviour
     public static AssetBundleManager Instance { get; private set; }
     public Dictionary<string, AssetBundle> Loaded { get; set; } = new Dictionary<string, AssetBundle>();
 
-    private string CachePath => Path.Combine(Application.persistentDataPath, "AssetBundles");
+    private string AssetBundleCachePath => Path.Combine(Application.persistentDataPath, "AssetBundles");
 
     #endregion
 
@@ -36,7 +37,7 @@ public class AssetBundleManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            Directory.CreateDirectory(CachePath);
+            Directory.CreateDirectory(AssetBundleCachePath);
         }
     }
     
@@ -53,7 +54,7 @@ public class AssetBundleManager : MonoBehaviour
             yield return null;
         }
 
-        string url = Path.Combine(CachePath, assetBundleInfo.Name);
+        string url = Path.Combine(AssetBundleCachePath, assetBundleInfo.Name);
         if (File.Exists(url) == false) // ToDo - and there is connection, else could not load
         {
             UILog.Instance.WriteLn(url + " checked. Cached file not found.");
@@ -69,7 +70,7 @@ public class AssetBundleManager : MonoBehaviour
             var apiRequest = UnityWebRequest.Get(url);
             yield return apiRequest.SendWebRequest();
 
-            url = Path.Combine(CachePath, assetBundleInfo.Name);
+            url = Path.Combine(AssetBundleCachePath, assetBundleInfo.Name);
 
             var recievedData = apiRequest.downloadHandler.data;
             if (recievedData.Length > 0)
