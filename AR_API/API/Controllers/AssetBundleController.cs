@@ -1,4 +1,5 @@
-﻿using DataAcces.Infrastructure;
+﻿using DapperExtensions;
+using DataAcces.Infrastructure;
 using DataAcces.Repositories;
 using DataAcces.Repositories.FileAcces;
 using DataModels;
@@ -60,6 +61,16 @@ namespace DemoAPI.Controllers
             }
 
             return result;
+        }
+
+        [HttpGet]
+        public IEnumerable<AssetBundle> GetAssetBundleByContentId(int contentId)
+        {
+            var repo = new SimpleRepository<AssetBundle>(con);
+
+            var predicate = Predicates.Field<AssetBundle>(r => r.Id, Operator.Eq, contentId);
+
+            return repo.GetAll(predicate);
         }
     }
 }

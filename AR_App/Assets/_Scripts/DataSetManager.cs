@@ -9,13 +9,18 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Vuforia;
 using DataResources;
+using DataAcces;
+using System.Data.SqlClient;
+using Mono.Data.Sqlite;
 
 public class DataSetManager : MonoBehaviour
 {
     #region Show in editor
 
+    [Header("Connection:")]
+    [SerializeField] private string connectionString;
+
     [Header("Test:")]
-    [SerializeField] private int testDataSetIdx;
     [SerializeField] private GameObject trackablePrefab;
     [SerializeField] private TMP_InputField dataSetID;
 
@@ -23,12 +28,11 @@ public class DataSetManager : MonoBehaviour
     #region Hide in editor
 
     public static DataSetManager Instance { get; private set; }
-
-    private Dictionary<string, RecognizedObjectResource> objectInfos;
     private string CachePath => Path.Combine(Application.persistentDataPath, "DataSets");
 
-    // Managment
+    private Dictionary<string, RecognizedObjectResource> objectInfos;
     private List<DataModels.DataSet> dataSetModels;
+    private DataSetRepository repository;
 
     #endregion
 
@@ -46,139 +50,199 @@ public class DataSetManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
 
             Directory.CreateDirectory(CachePath);
-
-            //VuforiaBehaviour vb = FindObjectOfType<VuforiaBehaviour>();
-            //vb.StartEvent += () => 
         }
     }
-    
+    private void Start()
+    {
+        repository = new DataSetRepository(new SqliteConnection(connectionString));
+
+        StartCoroutine(GetPossibleDataSets());
+    }
+
     #endregion
 
-    public void StartTest()
+    public void Test()
     {
-        StartCoroutine(Test());
-    }
-
-    private IEnumerator Test()
-    {
-        yield return PossibleDataSets();
-
-        if (int.TryParse(dataSetID.text, out int id) &&
-            dataSetModels.Any(x => x.Id == id))
+        if (int.TryParse(dataSetID.text, out int id))
         {
-            yield return LoadDataSet(dataSetModels[dataSetModels.FindIndex(x => x.Id == id)]);
+            var dataSet = dataSetModels.Find(x => x.Id == id);
+
+            if (dataSet != null)
+            {
+                StartCoroutine(FetchDataSet(dataSet));
+            }
         }
     }
-    private IEnumerator PossibleDataSets()
+
+    private IEnumerator GetPossibleDataSets()
     {
-        //ToDo - Offline version
-        var url = string.Format("{0}/Api/DataSet", ConnectionManager.Instance.Con);
-        var apiRequest = UnityWebRequest.Get(url);
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            FetchDataSetsOffline();
+        }
+        else
+        {
+            yield return FetchDataSetsOnline();
+        }
 
-        UILog.Instance.WriteLn($"Reqeust DataSets:\nurl:{url}");
-        yield return apiRequest.SendWebRequest();
-
-        var jsonResponse = apiRequest.downloadHandler.text;
-        dataSetModels = JsonConvert.DeserializeObject<List<DataModels.DataSet>>(jsonResponse);
-
-        UILog.Instance.Write("DataSets on the server:\n");
+        UILog.Instance.Write("DataSets:\n");
         foreach (var dataSetModel in dataSetModels)
         {
             UILog.Instance.Write($"Id: {dataSetModel.Id}\tName: '{dataSetModel.Name}'\n", "");
         }
         UILog.Instance.Write("=======================\n\n", "");
     }
-
-    private IEnumerator LoadDataSet(DataModels.DataSet dataSetModel)
+    
+    private IEnumerator FetchDataSetsOnline()
     {
-        ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
+        var url = string.Format("{0}/Api/DataSet", ConnectionManager.Instance.Con);
+        UILog.Instance.WriteLn($"Reqeust DataSets online:\nurl:{url}");
 
-        //ToDo - Offline version
-        yield return CacheDataSetFiles(dataSetModel);
+        var apiRequest = UnityWebRequest.Get(url);
 
-        var path = Path.Combine(CachePath, dataSetModel.Name + ".xml");
-        DataSet dataSet = objectTracker.CreateDataSet();
+        yield return apiRequest.SendWebRequest();
+        UILog.Instance.WriteLn($"Response arrived.");
 
-        if (dataSet.Load(path, VuforiaUnity.StorageType.STORAGE_ABSOLUTE))
+        var jsonResponse = apiRequest.downloadHandler.text;
+        dataSetModels = JsonConvert.DeserializeObject<List<DataModels.DataSet>>(jsonResponse);
+    }
+    private void FetchDataSetsOffline()
+    {
+        dataSetModels = repository.GetDataSets().ToList();
+        UILog.Instance.WriteLn($"DataSets loaded from cache.");
+    }
+
+
+    private IEnumerator FetchDataSet(DataModels.DataSet dataSet)
+    {
+        string url = Path.Combine(CachePath, dataSet.Name);
+        bool present = false;
+
+        if (File.Exists(url + ".xml") && File.Exists(url + ".dat"))
         {
-            UILog.Instance.WriteLn($"Loading DataSet { dataSetModel.Name } succeded.", Color.green);
+            UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } from cache.");
+            present = LoadDataSet(dataSet);
+        }
+        else if (Application.internetReachability != NetworkReachability.NotReachable)
+        {
+            UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } from the API.");
 
-            objectTracker.Stop();
-
-            if (objectTracker.ActivateDataSet(dataSet) == false)
+            if (File.Exists(url + ".xml") == false)
             {
-                UILog.Instance.WriteLn($"Could not activate DataSet { dataSetModel.Name }.", Color.red);
+                yield return DownloadFile(dataSet, true);
             }
-            else
+            if (File.Exists(url + ".dat") == false)
             {
-                UILog.Instance.WriteLn($"DataSet { dataSetModel.Name } activated.", Color.green);
+                yield return DownloadFile(dataSet, false);
             }
 
-            objectTracker.Start();
-
-            var trackables = TrackerManager.Instance.GetStateManager().GetTrackableBehaviours();
-
-            foreach (TrackableBehaviour trackable in trackables)
-            {
-                UILog.Instance.WriteLn($"Loading Trackable '{ trackable.TrackableName }' succeded.");
-
-                if (trackable.name == "New Game Object")
-                {
-                    trackable.gameObject.name = trackable.TrackableName;
-                    trackable.gameObject.AddComponent<DefaultTrackableEventHandler>();
-
-                    var contentHandler = trackable.gameObject.AddComponent<ContentHandler>();
-                    StartCoroutine(contentHandler.Initialize());
-                }
-            }
+            present = LoadDataSet(dataSet);
         }
         else
         {
-            UILog.Instance.WriteLn($"Loading DataSet { dataSetModel.Name } failed.", Color.red);
+            UILog.Instance.WriteLn($"Could not load { dataSet.Name }, no internet acces or cached files.", Color.red);
+        }
+
+        if (present)
+        {
+            InitializeTrackables(dataSet);
         }
     }
-    private IEnumerator CacheDataSetFiles(DataModels.DataSet dataSetModel)
-    {
-        string url = Path.Combine(CachePath, dataSetModel.Name);
 
-        //ToDo - Offline version
-        if (File.Exists(url + ".xml") == false)
-        {
-            yield return CacheFile(dataSetModel, true);
-        }
-        else
-        {
-            UILog.Instance.WriteLn($"{ url }.xml found on device.", Color.green);
-        }
-        //ToDo - Offline version
-        if (File.Exists(url + ".dat") == false)
-        {
-            yield return CacheFile(dataSetModel, false);
-        }
-        else
-        {
-            UILog.Instance.WriteLn($"{ url }.dat found on device.", Color.green);
-        }
-    }
-    private IEnumerator CacheFile(DataModels.DataSet dataSetModel, bool isXml)
+    private IEnumerator DownloadFile(DataModels.DataSet dataSet, bool isXml)
     {
-        //ToDo - Offline version
-        var url = string.Format("{0}/api/DataSet/{1}/File?isXml={2}", ConnectionManager.Instance.Con, dataSetModel.Id, isXml);
+        var url = string.Format("{0}/api/DataSet/{1}/File?isXml={2}", ConnectionManager.Instance.Con, dataSet.Id, isXml);
 
-        UILog.Instance.WriteLn($"Download File: {dataSetModel.Name + (isXml ? ".xml" : ".dat")}\nurl: { url }");
+        UILog.Instance.WriteLn($"Download File: {dataSet.Name + (isXml ? ".xml" : ".dat")}\nurl: { url }");
         var request = UnityWebRequest.Get(url);
         yield return request.SendWebRequest();
 
         if (request.downloadHandler.data.Length > 0)
         {
-            var path = Path.Combine(CachePath, dataSetModel.Name + (isXml ? ".xml" : ".dat"));
+            var path = Path.Combine(CachePath, dataSet.Name + (isXml ? ".xml" : ".dat"));
 
             File.WriteAllBytes(path, request.downloadHandler.data);
-            UILog.Instance.WriteLn($"File { dataSetModel.Name } { (isXml ? ".xml" : ".dat") } is cached to:\n{ path}", Color.green);
+            UILog.Instance.WriteLn($"File { dataSet.Name } { (isXml ? ".xml" : ".dat") } is cached to:\n{ path}", Color.green);
         }
         else
         {
-            UILog.Instance.WriteLn($"Could not get { dataSetModel.Name } from the server.", Color.red);
+            UILog.Instance.WriteLn($"Could not find { dataSet.Name } from the server.", Color.red);
         }
     }
+    private bool LoadDataSet(DataModels.DataSet dataSet)
+    {
+        var result = false;
+
+        ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
+        DataSet loadedDataSet = objectTracker.CreateDataSet();
+
+        var path = Path.Combine(CachePath, dataSet.Name + ".xml");
+
+        if (loadedDataSet.Load(path, VuforiaUnity.StorageType.STORAGE_ABSOLUTE))
+        {
+            UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } succeded.", Color.green);
+            objectTracker.Stop();
+
+            if (objectTracker.ActivateDataSet(loadedDataSet) == false)
+            {
+                UILog.Instance.WriteLn($"Could not activate DataSet { dataSet.Name }.", Color.red);
+            }
+            else
+            {
+                UILog.Instance.WriteLn($"DataSet { dataSet.Name } activated.", Color.green);
+                result = true;
+            }
+
+            objectTracker.Start();
+        }
+        else
+        {
+            UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } failed.", Color.red);
+        }
+
+        return result;
+    }
+    private void InitializeTrackables(DataModels.DataSet dataSet)
+    {
+        var trackables = TrackerManager.Instance.GetStateManager().GetTrackableBehaviours();
+
+        foreach (TrackableBehaviour trackable in trackables)
+        {
+            UILog.Instance.WriteLn($"Loading Trackable '{ trackable.TrackableName }' succeded.");
+
+            if (trackable.name == "New Game Object")
+            {
+                trackable.gameObject.name = trackable.TrackableName;
+                trackable.gameObject.AddComponent<DefaultTrackableEventHandler>();
+
+                var contentHandler = trackable.gameObject.AddComponent<ContentHandler>();
+                StartCoroutine(contentHandler.Initialize());
+            }
+        }
+    }
+
 }
+
+    //private IEnumerator CacheDataSetFiles(DataModels.DataSet dataSetModel)
+    //{
+    //    string url = Path.Combine(CachePath, dataSetModel.Name);
+
+    //    //ToDo - Offline version
+    //    if (File.Exists(url + ".xml") == false)
+    //    {
+    //        yield return DownloadDataSetFile(dataSetModel, true);
+    //    }
+    //    else
+    //    {
+    //        UILog.Instance.WriteLn($"{ url }.xml found on device.", Color.green);
+    //    }
+    //    //ToDo - Offline version
+    //    if (File.Exists(url + ".dat") == false)
+    //    {
+    //        yield return DownloadDataSetFile(dataSetModel, false);
+    //    }
+    //    else
+    //    {
+    //        UILog.Instance.WriteLn($"{ url }.dat found on device.", Color.green);
+    //    }
+    //}
