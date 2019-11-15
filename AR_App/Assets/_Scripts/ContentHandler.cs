@@ -1,4 +1,5 @@
-﻿using DataResources;
+﻿using DataAcces;
+using DataResources;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
@@ -77,7 +78,7 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
 
             if (recognizedObject != null)
             {
-                UILog.Instance.WriteLn($"RecognizedObject info found on server with an id of {id}", Color.green);
+                UILog.Instance.WriteLn($"RecognizedObject info found on server with an id of { id }", Color.green);
                 yield return AssetBundleManager.Instance.Load(recognizedObject.Content.AssetBundle);
 
                 var assetBundle = AssetBundleManager.Instance.Loaded[recognizedObject.Content.AssetBundle.Name];
@@ -87,7 +88,7 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
             }
             else
             {
-                UILog.Instance.WriteLn($"RecognizedObject info not found on server with an id of {id}", Color.red);
+                UILog.Instance.WriteLn($"RecognizedObject info not found on server with an id of { id }", Color.red);
             }
         }
         else
@@ -98,13 +99,23 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
 
     private IEnumerator GetRecognizedObject(int id)
     {
-        //ToDo - Offline version
-        var url = string.Format("{0}/api/RecognizedObject/{1}", ConnectionManager.Instance.Con, id);
+        var repo = new RecognizedObjectRepository();
 
-        var request = UnityWebRequest.Get(url);
-        yield return request.SendWebRequest();
+        if (ConnectionManager.Instance.Mode == AccesMode.Online)
+        {
+            var url = $"{ ConnectionManager.Instance.ApiUrl }/api/RecognizedObject/{ id }";
 
-        var jsonResponse = request.downloadHandler.text;
-        recognizedObject = JsonConvert.DeserializeObject<RecognizedObjectResource>(jsonResponse);
+            var request = UnityWebRequest.Get(url);
+            yield return request.SendWebRequest();
+
+            var jsonResponse = request.downloadHandler.text;
+            recognizedObject = JsonConvert.DeserializeObject<RecognizedObjectResource>(jsonResponse);
+
+            repo.CacheRecognizedObject(recognizedObject);
+        }
+        else
+        {
+            recognizedObject = repo.GetRecognizedObject(id);
+        }
     }
 }

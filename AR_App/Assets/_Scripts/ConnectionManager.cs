@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using Mono.Data.Sqlite;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 
@@ -7,19 +9,24 @@ public class ConnectionManager : MonoBehaviour
 {
     [SerializeField] private TMP_InputField ipInputField;
     [SerializeField] private ConnectionConfig connectionConfig;
+    [SerializeField] private string relativeCachePath;
 
     public static ConnectionManager Instance { get; set; }
 
-    public string Con { get; set; }
+    public string ApiUrl { get; private set; }
+    public SqliteConnection CacheConnection { get; private set; }
+    public AccesMode Mode { get; set; }
 
-    void Start()
+    void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
 
-            Con = connectionConfig.server;
-            ipInputField.text = Con;
+            ApiUrl = connectionConfig.server;
+            CacheConnection = new SqliteConnection("Data Source=" + Path.Combine(Application.persistentDataPath, relativeCachePath));
+
+            ipInputField.text = ApiUrl;
         }
         else
         {
@@ -29,6 +36,12 @@ public class ConnectionManager : MonoBehaviour
 
     public void RefreshConnection()
     {
-        Con = ipInputField.text;
+        ApiUrl = ipInputField.text;
+    }
+
+    // ToDo - Test API acces
+    public void TestApiAcces()
+    {
+        // Mode = AccesMode.Offline;
     }
 }

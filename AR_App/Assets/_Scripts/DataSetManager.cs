@@ -13,12 +13,11 @@ using DataAcces;
 using System.Data.SqlClient;
 using Mono.Data.Sqlite;
 
+public enum AccesMode { Offline, Online }
+
 public class DataSetManager : MonoBehaviour
 {
     #region Show in editor
-
-    [Header("Connection:")]
-    [SerializeField] private string connectionString;
 
     [Header("Test:")]
     [SerializeField] private GameObject trackablePrefab;
@@ -54,7 +53,7 @@ public class DataSetManager : MonoBehaviour
     }
     private void Start()
     {
-        repository = new DataSetRepository(new SqliteConnection(connectionString));
+        repository = new DataSetRepository();
 
         StartCoroutine(GetPossibleDataSets());
     }
@@ -69,7 +68,7 @@ public class DataSetManager : MonoBehaviour
 
             if (dataSet != null)
             {
-                StartCoroutine(FetchDataSet(dataSet));
+                StartCoroutine(FetchFile(dataSet));
             }
         }
     }
@@ -78,10 +77,12 @@ public class DataSetManager : MonoBehaviour
     {
         if (Application.internetReachability == NetworkReachability.NotReachable)
         {
+            ConnectionManager.Instance.Mode = AccesMode.Offline;
             FetchDataSetsOffline();
         }
         else
         {
+            ConnectionManager.Instance.Mode = AccesMode.Online;
             yield return FetchDataSetsOnline();
         }
 
@@ -93,9 +94,40 @@ public class DataSetManager : MonoBehaviour
         UILog.Instance.Write("=======================\n\n", "");
     }
     
+    private IEnumerator FetchFile(DataModels.DataSet dataSet)
+    {
+        string url = Path.Combine(CachePath, dataSet.Name);
+        bool present = false;
+
+        if (ConnectionManager.Instance.Mode == AccesMode.Offline)
+        {
+            UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } from cache.");
+            present = LoadFile(dataSet);
+        }
+        else if (ConnectionManager.Instance.Mode == AccesMode.Online)
+        {
+            UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } from the API.");
+
+            if (File.Exists(url + ".xml") == false)
+            {
+                yield return DownloadFile(dataSet, true);
+            }
+            if (File.Exists(url + ".dat") == false)
+            {
+                yield return DownloadFile(dataSet, false);
+            }
+
+            present = LoadFile(dataSet);
+        }
+
+        if (present)
+        {
+            InitializeTrackables(dataSet);
+        }
+    }
     private IEnumerator FetchDataSetsOnline()
     {
-        var url = string.Format("{0}/Api/DataSet", ConnectionManager.Instance.Con);
+        var url = $"{ ConnectionManager.Instance.ApiUrl }/Api/DataSet";
         UILog.Instance.WriteLn($"Reqeust DataSets online:\nurl:{url}");
 
         var apiRequest = UnityWebRequest.Get(url);
@@ -112,48 +144,11 @@ public class DataSetManager : MonoBehaviour
         UILog.Instance.WriteLn($"DataSets loaded from cache.");
     }
 
-
-    private IEnumerator FetchDataSet(DataModels.DataSet dataSet)
-    {
-        string url = Path.Combine(CachePath, dataSet.Name);
-        bool present = false;
-
-        if (File.Exists(url + ".xml") && File.Exists(url + ".dat"))
-        {
-            UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } from cache.");
-            present = LoadDataSet(dataSet);
-        }
-        else if (Application.internetReachability != NetworkReachability.NotReachable)
-        {
-            UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } from the API.");
-
-            if (File.Exists(url + ".xml") == false)
-            {
-                yield return DownloadFile(dataSet, true);
-            }
-            if (File.Exists(url + ".dat") == false)
-            {
-                yield return DownloadFile(dataSet, false);
-            }
-
-            present = LoadDataSet(dataSet);
-        }
-        else
-        {
-            UILog.Instance.WriteLn($"Could not load { dataSet.Name }, no internet acces or cached files.", Color.red);
-        }
-
-        if (present)
-        {
-            InitializeTrackables(dataSet);
-        }
-    }
-
     private IEnumerator DownloadFile(DataModels.DataSet dataSet, bool isXml)
     {
-        var url = string.Format("{0}/api/DataSet/{1}/File?isXml={2}", ConnectionManager.Instance.Con, dataSet.Id, isXml);
+        var url = $"{ ConnectionManager.Instance.ApiUrl }/api/DataSet/{ dataSet.Id }/File?isXml={ isXml }";
 
-        UILog.Instance.WriteLn($"Download File: {dataSet.Name + (isXml ? ".xml" : ".dat")}\nurl: { url }");
+        UILog.Instance.WriteLn($"Download File: { dataSet.Name + (isXml ? ".xml" : ".dat") }\nurl: { url }");
         var request = UnityWebRequest.Get(url);
         yield return request.SendWebRequest();
 
@@ -162,14 +157,16 @@ public class DataSetManager : MonoBehaviour
             var path = Path.Combine(CachePath, dataSet.Name + (isXml ? ".xml" : ".dat"));
 
             File.WriteAllBytes(path, request.downloadHandler.data);
-            UILog.Instance.WriteLn($"File { dataSet.Name } { (isXml ? ".xml" : ".dat") } is cached to:\n{ path}", Color.green);
+
+            repository.CacheDataSet(dataSet);
+            UILog.Instance.WriteLn($"File { dataSet.Name } { (isXml ? ".xml" : ".dat") } is cached to:\n{ path }", Color.green);
         }
         else
         {
             UILog.Instance.WriteLn($"Could not find { dataSet.Name } from the server.", Color.red);
         }
     }
-    private bool LoadDataSet(DataModels.DataSet dataSet)
+    private bool LoadFile(DataModels.DataSet dataSet)
     {
         var result = false;
 
@@ -220,7 +217,6 @@ public class DataSetManager : MonoBehaviour
             }
         }
     }
-
 }
 
     //private IEnumerator CacheDataSetFiles(DataModels.DataSet dataSetModel)

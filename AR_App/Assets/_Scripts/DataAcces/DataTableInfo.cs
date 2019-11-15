@@ -64,16 +64,13 @@ namespace DataAcces
                 }
             }
 
+            Debug.Log(statement);
             return statement;
         }
 
-        public string UpsertCommand(T item)
+        public string InsertOrReplace(T item)
         {
-            var result = $@"
-            INSERT INTO { TableName }{ ColoumNames() }
-            { InsertValue(item)} 
-            ON CONFLICT(Id) DO 
-            {UpdateCommand(item)}";
+            var result = $"REPLACE INTO { TableName }{ ColoumNames() } VALUES { InsertValue(item) }";
 
             Debug.Log(result);
 
@@ -191,5 +188,29 @@ namespace DataAcces
 
             return result;
         }
+        private string UpsertUpdateCommand(T item)
+        {
+            var result = $"UPDATE SET ";
+
+            for (int i = 0; i < coloumns.Count; i++)
+            {
+                result += $"{ coloumns[i].Key.Name } = excluded.{ coloumns[i].Key.Name }";
+
+                if (i < coloumns.Count - 1)
+                {
+                    result += ", ";
+                }
+            }
+
+            return result;
+        }
     }
 }
+
+// UPSERT
+
+// INSERT INTO RecognizedObject(Id, Name, ContentId, Modified)
+// VALUES(2,'Test_asd',2,'11/7/2019 12:06:26 PM')
+// ON CONFLICT(Id) DO
+// UPDATE
+// SET Id = excluded.Id, Name = excluded.Name, ContentId = excluded.ContentId, Modified = excluded.Modified
