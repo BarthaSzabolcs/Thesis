@@ -62,14 +62,12 @@ public class DataSetManager : MonoBehaviour
 
     public void Test()
     {
-        if (int.TryParse(dataSetID.text, out int id))
-        {
-            var dataSet = dataSetModels.Find(x => x.Id == id);
+        var id = 1;
+        var dataSet = dataSetModels.Find(x => x.Id == id);
 
-            if (dataSet != null)
-            {
-                StartCoroutine(FetchFile(dataSet));
-            }
+        if (dataSet != null)
+        {
+            StartCoroutine(FetchFile(dataSet));
         }
     }
 

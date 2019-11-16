@@ -9,15 +9,22 @@ using UnityEngine.Networking;
 
 public class ConnectionManager : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField ipInputField;
+    #region Show in editor
+
     [SerializeField] private ConnectionConfig connectionConfig;
     [SerializeField] private string relativeCachePath;
 
-    public static ConnectionManager Instance { get; set; }
+    #endregion
+    #region Hide in editor
 
+    public static ConnectionManager Instance { get; set; }
     public string ApiUrl { get; private set; }
     public SqliteConnection CacheConnection { get; private set; }
     public ApiDataAcces ApiDataAccesMode { get; set; }
+
+    #endregion
+
+    #region Unity Callbacks
 
     void Awake()
     {
@@ -27,19 +34,14 @@ public class ConnectionManager : MonoBehaviour
 
             ApiUrl = connectionConfig.server;
             CacheConnection = new SqliteConnection("Data Source=" + Path.Combine(Application.persistentDataPath, relativeCachePath));
-
-            ipInputField.text = ApiUrl;
         }
         else
         {
             Destroy(this);
         }
     }
-
-    public void RefreshConnection()
-    {
-        ApiUrl = ipInputField.text;
-    }
+    
+    #endregion
 
     public IEnumerator TestApiAcces()
     {
