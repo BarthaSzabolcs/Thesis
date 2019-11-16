@@ -192,7 +192,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ipInputField: {fileID: 1867793199}
-  connectionConfig: {fileID: 11400000, guid: d43643cac8190f845a723eeedc2bfcd9, type: 2}
+  connectionConfig: {fileID: 11400000, guid: 682ad2cde104ca34ab352756ceb48d65, type: 2}
   relativeCachePath: Cache.db
 --- !u!1001 &321118551
 PrefabInstance:
@@ -269,7 +269,7 @@ PrefabInstance:
     - target: {fileID: 1842216857854373936, guid: af9a3822f278747479a94ecb9d3643a1,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 340.61978
+      value: 288.6457
       objectReference: {fileID: 0}
     - target: {fileID: 1842216857044348099, guid: af9a3822f278747479a94ecb9d3643a1,
         type: 3}
@@ -296,26 +296,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7876862750552975955, guid: af9a3822f278747479a94ecb9d3643a1,
-        type: 3}
-      propertyPath: callerMemberColor.a
-      value: 0.78431374
-      objectReference: {fileID: 0}
-    - target: {fileID: 7876862750552975955, guid: af9a3822f278747479a94ecb9d3643a1,
-        type: 3}
-      propertyPath: callerMemberColor.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7876862750552975955, guid: af9a3822f278747479a94ecb9d3643a1,
-        type: 3}
-      propertyPath: callerMemberColor.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7876862750552975955, guid: af9a3822f278747479a94ecb9d3643a1,
-        type: 3}
-      propertyPath: debugLogging
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1867793199, guid: af9a3822f278747479a94ecb9d3643a1, type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -328,6 +308,11 @@ PrefabInstance:
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 276855244}
+    - target: {fileID: 7876862750552975955, guid: af9a3822f278747479a94ecb9d3643a1,
+        type: 3}
+      propertyPath: debugLogging
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: af9a3822f278747479a94ecb9d3643a1, type: 3}
 --- !u!1 &420896435

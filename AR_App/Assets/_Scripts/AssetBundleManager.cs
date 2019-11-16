@@ -46,12 +46,12 @@ public class AssetBundleManager : MonoBehaviour
 
         yield return FetchFile(assetBundleModel);
 
-        yield return LoadFromMemory(assetBundleModel);
+        LoadFromMemory(assetBundleModel);
     }
     private IEnumerator FetchFile(DataModels.AssetBundle assetBundle)
     {
         string url = Path.Combine(CachePath, assetBundle.Name);
-        if (File.Exists(url) == false && Application.internetReachability != NetworkReachability.NotReachable)
+        if (File.Exists(url) == false)
         {
             UILog.Instance.WriteLn(url + " checked. Cached file not found.");
 
@@ -84,28 +84,21 @@ public class AssetBundleManager : MonoBehaviour
             UILog.Instance.WriteLn(url + " checked. Cached file found.", Color.green);
         }
     }
-    private IEnumerator LoadFromMemory(DataModels.AssetBundle assetBundleModel)
+    private void LoadFromMemory(DataModels.AssetBundle assetBundleModel)
     {
         var url = Path.Combine(CachePath, assetBundleModel.Name);
 
-        #if UNITY_ANDROID
-        url = "file://" + url;
-        #endif
-
-        // UILog.Instance.WriteLn($"Load AssetBundle { assetBundleModel.Name } from memory:\n{ url }");
-        var memoryRequest = UnityWebRequestAssetBundle.GetAssetBundle(url);
-        yield return memoryRequest.SendWebRequest();
-
-        var assetBundle = DownloadHandlerAssetBundle.GetContent(memoryRequest);
+        UILog.Instance.WriteLn($"Load AssetBundle { assetBundleModel.Name } from memory:\n{ url }");
+        var assetBundle = AssetBundle.LoadFromFile(url);
 
         if (assetBundle != null)
         {
             Loaded.Add(assetBundleModel.Name, assetBundle);
-            // UILog.Instance.WriteLn($"Load of AssetBundle { assetBundleModel.Name } successful.", Color.green);
+            UILog.Instance.WriteLn($"Load of AssetBundle { assetBundleModel.Name } successful.", Color.green);
         }
         else
         {
-            // UILog.Instance.WriteLn($"Load of AssetBundle { assetBundleModel.Name } failed.", Color.red);
+            UILog.Instance.WriteLn($"Load of AssetBundle { assetBundleModel.Name } failed.", Color.red);
         }
     }
 }
