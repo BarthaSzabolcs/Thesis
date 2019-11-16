@@ -269,7 +269,7 @@ PrefabInstance:
     - target: {fileID: 1842216857854373936, guid: af9a3822f278747479a94ecb9d3643a1,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 340.61972
+      value: 340.61978
       objectReference: {fileID: 0}
     - target: {fileID: 1842216857044348099, guid: af9a3822f278747479a94ecb9d3643a1,
         type: 3}
@@ -298,48 +298,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7876862750552975955, guid: af9a3822f278747479a94ecb9d3643a1,
         type: 3}
-      propertyPath: exceptionLogging
+      propertyPath: callerMemberColor.a
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 7876862750552975955, guid: af9a3822f278747479a94ecb9d3643a1,
+        type: 3}
+      propertyPath: callerMemberColor.r
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7876862750552975955, guid: af9a3822f278747479a94ecb9d3643a1,
         type: 3}
-      propertyPath: indentPercent
+      propertyPath: callerMemberColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7876862750552975955, guid: af9a3822f278747479a94ecb9d3643a1,
+        type: 3}
+      propertyPath: debugLogging
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7876862750552975955, guid: af9a3822f278747479a94ecb9d3643a1,
-        type: 3}
-      propertyPath: consoleMessageColor.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7876862750552975955, guid: af9a3822f278747479a94ecb9d3643a1,
-        type: 3}
-      propertyPath: consoleMessageColor.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7876862750552975955, guid: af9a3822f278747479a94ecb9d3643a1,
-        type: 3}
-      propertyPath: consoleMessageColor.a
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1842216858543977228, guid: af9a3822f278747479a94ecb9d3643a1,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.39215687
-      objectReference: {fileID: 0}
-    - target: {fileID: 1842216858543977228, guid: af9a3822f278747479a94ecb9d3643a1,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.39215687
-      objectReference: {fileID: 0}
-    - target: {fileID: 1842216858543977228, guid: af9a3822f278747479a94ecb9d3643a1,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.39215687
-      objectReference: {fileID: 0}
-    - target: {fileID: 1842216858543977228, guid: af9a3822f278747479a94ecb9d3643a1,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.7254902
       objectReference: {fileID: 0}
     - target: {fileID: 1867793199, guid: af9a3822f278747479a94ecb9d3643a1, type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_Target

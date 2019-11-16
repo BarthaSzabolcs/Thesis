@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class ConnectionManager : MonoBehaviour
 {
@@ -15,7 +17,7 @@ public class ConnectionManager : MonoBehaviour
 
     public string ApiUrl { get; private set; }
     public SqliteConnection CacheConnection { get; private set; }
-    public AccesMode Mode { get; set; }
+    public ApiDataAcces ApiDataAccesMode { get; set; }
 
     void Awake()
     {
@@ -39,9 +41,21 @@ public class ConnectionManager : MonoBehaviour
         ApiUrl = ipInputField.text;
     }
 
-    // ToDo - Test API acces
-    public void TestApiAcces()
+    public IEnumerator TestApiAcces()
     {
-        // Mode = AccesMode.Offline;
+        var testRequest = UnityWebRequest.Get(ApiUrl);
+
+        yield return testRequest.SendWebRequest();
+
+        if (testRequest.error != null)
+        {
+            ApiDataAccesMode = ApiDataAcces.Offline;
+            UILog.Instance.WriteLn("API offline.");
+        }
+        else
+        {
+            ApiDataAccesMode = ApiDataAcces.Online;
+            UILog.Instance.WriteLn("API online.");
+        }
     }
 }

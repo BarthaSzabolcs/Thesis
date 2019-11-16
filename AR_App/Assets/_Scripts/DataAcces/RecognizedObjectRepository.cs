@@ -32,7 +32,7 @@ namespace DataAcces
             $@"SELECT * FROM RecognizedObject ro 
             LEFT JOIN Content c ON c.Id = ro.ContentId
             LEFT JOIN AssetBundle ab ON ab.Id = c.AssetBundleId
-            WHERE Id = { id }";
+            WHERE ro.Id = { id }";
 
             using (var con = Connection)
             {

@@ -17,9 +17,9 @@ public class UILog : MonoBehaviour
 
     [Header("   Colors:")]
     [Header("Format:")]
+    [SerializeField] private Color callerMemberColor;
     [SerializeField] private Color consoleMessageColor;
     [SerializeField] private Color normalColor;
-    [SerializeField] private Color logColor;
     [SerializeField] private Color warningColor;
     [SerializeField] private Color exceptionColor;
 
@@ -60,30 +60,32 @@ public class UILog : MonoBehaviour
 
     #endregion
 
-    public void WriteLn(string line, [CallerMemberName] string callerName = "")
+    public void WriteLn(string line, [CallerMemberName] string callerName = "", LogType type = LogType.Log)
     {
-        WriteLn(line, normalColor, callerName);
+        WriteLn(line, GetTypeColor(type), callerName);
     }
     public void WriteLn(string line, Color color, [CallerMemberName] string callerFunction = "")
     {
         Write(line, color, callerFunction);
         logText.text += "\n\n";
     }
-    public void Write(string line, [CallerMemberName] string callerName = "")
+
+    public void Write(string line, [CallerMemberName] string callerName = "", LogType type = LogType.Log)
     {
-        Write(line, normalColor, callerName);
+        Write(line, GetTypeColor(type), callerName);
     }
     public void Write(string line, Color color, [CallerMemberName] string callerFunction = "")
     {
         if (callerFunction == string.Empty)
         {
-            logText.text += $"{line.Color(color)}";
+            logText.text += $"{ line.Color(color) }";
         }
         else
         {
-            logText.text += $"{callerFunction.Italic().Color(color)}\n{line.Color(color).Indent(indentPercent)}";
+            logText.text += $"{ callerFunction.Italic().Color(callerMemberColor) }\n{ line.Color(color).Indent(indentPercent) }";
         }
     }
+
     public void Clear()
     {
         logText.text = "";
@@ -96,24 +98,41 @@ public class UILog : MonoBehaviour
         {
             if (exceptionLogging)
             {
-                Write(condition + "\n", exceptionColor, string.Empty);
-                WriteLn(stackTrace, exceptionColor, string.Empty);
+                Write(condition + "\n", GetTypeColor(type), string.Empty);
+                WriteLn(stackTrace, GetTypeColor(type), string.Empty);
             }
         }
         else if(type == LogType.Warning)
         {
             if (warningLogging)
             {
-                WriteLn(condition, warningColor, string.Empty);
+                WriteLn(condition, GetTypeColor(type), string.Empty);
             }
         }
         else if(type == LogType.Log)
         {
             if (debugLogging)
             {
-                WriteLn(condition, logColor, string.Empty);
+                WriteLn(condition, GetTypeColor(type), string.Empty);
             }
         }
     }
 
+    private Color GetTypeColor(LogType log)
+    {
+        switch (log)
+        {
+            case LogType.Error:
+            case LogType.Assert:
+            case LogType.Exception:
+                return exceptionColor;
+
+            case LogType.Warning:
+                return warningColor;
+
+            case LogType.Log:
+            default:
+                return normalColor;
+        }
+    }
 }

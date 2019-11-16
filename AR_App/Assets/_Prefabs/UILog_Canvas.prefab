@@ -1464,13 +1464,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   exceptionLogging: 1
   warningLogging: 1
-  debugLogging: 1
-  callerMemberColor: {r: 1, g: 1, b: 0, a: 1}
+  debugLogging: 0
+  callerMemberColor: {r: 1, g: 1, b: 0, a: 0.78431374}
+  consoleMessageColor: {r: 1, g: 1, b: 0, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
-  logColor: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
   warningColor: {r: 1, g: 0.7254902, b: 0, a: 1}
   exceptionColor: {r: 0.882353, g: 0, b: 0, a: 1}
-  indentPercent: 2
+  indentPercent: 0
   logText: {fileID: 1842216857044348156}
 --- !u!1 &1842216857044348098
 GameObject:
@@ -1753,7 +1753,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -455.50003, y: 154.02817}
+  m_AnchoredPosition: {x: -455.50003, y: 340.61978}
   m_SizeDelta: {x: 911, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1842216857854373937
@@ -2197,7 +2197,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.49019608, g: 0.49019608, b: 0.49019608, a: 0.392}
+  m_Color: {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 0.7254902}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

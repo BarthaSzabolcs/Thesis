@@ -13,7 +13,7 @@ using DataAcces;
 using System.Data.SqlClient;
 using Mono.Data.Sqlite;
 
-public enum AccesMode { Offline, Online }
+public enum ApiDataAcces { Offline, Online }
 
 public class DataSetManager : MonoBehaviour
 {
@@ -75,17 +75,18 @@ public class DataSetManager : MonoBehaviour
 
     private IEnumerator GetPossibleDataSets()
     {
-        if (Application.internetReachability == NetworkReachability.NotReachable)
+        yield return ConnectionManager.Instance.TestApiAcces();
+
+        if (ConnectionManager.Instance.ApiDataAccesMode == ApiDataAcces.Online)
         {
-            ConnectionManager.Instance.Mode = AccesMode.Offline;
-            FetchDataSetsOffline();
+            yield return FetchDataSetsOnline();
         }
         else
         {
-            ConnectionManager.Instance.Mode = AccesMode.Online;
-            yield return FetchDataSetsOnline();
+            FetchDataSetsOffline();
         }
 
+        // ToDo - UI for possible instances
         UILog.Instance.Write("DataSets:\n");
         foreach (var dataSetModel in dataSetModels)
         {
@@ -99,12 +100,12 @@ public class DataSetManager : MonoBehaviour
         string url = Path.Combine(CachePath, dataSet.Name);
         bool present = false;
 
-        if (ConnectionManager.Instance.Mode == AccesMode.Offline)
+        if (ConnectionManager.Instance.ApiDataAccesMode == ApiDataAcces.Offline)
         {
             UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } from cache.");
             present = LoadFile(dataSet);
         }
-        else if (ConnectionManager.Instance.Mode == AccesMode.Online)
+        else if (ConnectionManager.Instance.ApiDataAccesMode == ApiDataAcces.Online)
         {
             UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } from the API.");
 
@@ -218,27 +219,3 @@ public class DataSetManager : MonoBehaviour
         }
     }
 }
-
-    //private IEnumerator CacheDataSetFiles(DataModels.DataSet dataSetModel)
-    //{
-    //    string url = Path.Combine(CachePath, dataSetModel.Name);
-
-    //    //ToDo - Offline version
-    //    if (File.Exists(url + ".xml") == false)
-    //    {
-    //        yield return DownloadDataSetFile(dataSetModel, true);
-    //    }
-    //    else
-    //    {
-    //        UILog.Instance.WriteLn($"{ url }.xml found on device.", Color.green);
-    //    }
-    //    //ToDo - Offline version
-    //    if (File.Exists(url + ".dat") == false)
-    //    {
-    //        yield return DownloadDataSetFile(dataSetModel, false);
-    //    }
-    //    else
-    //    {
-    //        UILog.Instance.WriteLn($"{ url }.dat found on device.", Color.green);
-    //    }
-    //}
