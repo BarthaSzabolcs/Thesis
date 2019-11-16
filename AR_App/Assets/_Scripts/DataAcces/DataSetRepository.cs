@@ -15,6 +15,14 @@ namespace DataAcces
     {
         DataTableInfo<DataModels.DataSet> dataSetTable = new DataTableInfo<DataModels.DataSet>();
 
+        public DataSetRepository()
+        {
+            using (var con = ConnectionManager.Instance.CacheConnection)
+            {
+                con.Execute(dataSetTable.CreateCommand());
+            }
+        }
+
         public void CacheDataSet(DataModels.DataSet dataSet)
         {
             var sql = dataSetTable.InsertOrReplace(dataSet);

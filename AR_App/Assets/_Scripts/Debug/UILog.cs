@@ -10,10 +10,18 @@ public class UILog : MonoBehaviour
 {
     #region Show in editor
 
+    [Header("Log Types:")]
+    [SerializeField] bool exceptionLogging;
+    [SerializeField] bool warningLogging;
+    [SerializeField] bool debugLogging;
+
     [Header("   Colors:")]
     [Header("Format:")]
-    [SerializeField] private Color callerColor;
-    [SerializeField] private Color baseColor;
+    [SerializeField] private Color consoleMessageColor;
+    [SerializeField] private Color normalColor;
+    [SerializeField] private Color logColor;
+    [SerializeField] private Color warningColor;
+    [SerializeField] private Color exceptionColor;
 
     [Header("")]
     [SerializeField] private int indentPercent;
@@ -24,15 +32,17 @@ public class UILog : MonoBehaviour
     #region Hide in editor
 
     public static UILog Instance;
-    
+
     #endregion
+
+    #region Unity Callbacks
 
     private void Awake()
     {
         if (Instance is null)
         {
             Instance = this;
-            WriteLn("================= Debug Logs =================", Color.yellow, "");
+            WriteLn("================= Debug Logs =================", consoleMessageColor, "");
         }
         else
         {
@@ -48,10 +58,11 @@ public class UILog : MonoBehaviour
         Application.logMessageReceived -= LogCallback;
     }
 
+    #endregion
 
     public void WriteLn(string line, [CallerMemberName] string callerName = "")
     {
-        WriteLn(line, baseColor, callerName);
+        WriteLn(line, normalColor, callerName);
     }
     public void WriteLn(string line, Color color, [CallerMemberName] string callerFunction = "")
     {
@@ -60,7 +71,7 @@ public class UILog : MonoBehaviour
     }
     public void Write(string line, [CallerMemberName] string callerName = "")
     {
-        Write(line, baseColor, callerName);
+        Write(line, normalColor, callerName);
     }
     public void Write(string line, Color color, [CallerMemberName] string callerFunction = "")
     {
@@ -70,26 +81,38 @@ public class UILog : MonoBehaviour
         }
         else
         {
-            logText.text += $"{callerFunction.Italic().Color(callerColor)}\n{line.Color(color).Indent(indentPercent)}";
+            logText.text += $"{callerFunction.Italic().Color(color)}\n{line.Color(color).Indent(indentPercent)}";
         }
     }
     public void Clear()
     {
         logText.text = "";
-        WriteLn("================= Logs Cleared =================", Color.yellow, "");
+        WriteLn("================= Logs Cleared =================", consoleMessageColor, string.Empty);
     }
 
     private void LogCallback(string condition, string stackTrace, LogType type)
     {
-        if (type == LogType.Exception || type == LogType.Error)
+        if (type == LogType.Exception || type == LogType.Error || type == LogType.Assert)
         {
-            Write(condition + "\n", Color.red);
-            WriteLn(stackTrace, Color.red);
+            if (exceptionLogging)
+            {
+                Write(condition + "\n", exceptionColor, string.Empty);
+                WriteLn(stackTrace, exceptionColor, string.Empty);
+            }
         }
         else if(type == LogType.Warning)
         {
-            Write(condition + "\n", Color.yellow);
-            WriteLn(stackTrace, Color.yellow);
+            if (warningLogging)
+            {
+                WriteLn(condition, warningColor, string.Empty);
+            }
+        }
+        else if(type == LogType.Log)
+        {
+            if (debugLogging)
+            {
+                WriteLn(condition, logColor, string.Empty);
+            }
         }
     }
 

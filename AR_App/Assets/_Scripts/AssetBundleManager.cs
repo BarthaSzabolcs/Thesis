@@ -91,9 +91,9 @@ public class AssetBundleManager : MonoBehaviour
             UILog.Instance.WriteLn(url + " checked. Cached file not found.");
 
 #if UNITY_ANDROID && !UNITY_EDITOR
-            url = "{ ConnectionManager.Instance.ApiUrl }/Api/AssetBundle/{ assetBundle.Id }/File?platform=1";
+            url = $"{ ConnectionManager.Instance.ApiUrl }/Api/AssetBundle/{ assetBundle.Id }/File?platform=1";
 #else
-            url = "{ ConnectionManager.Instance.ApiUrl }/Api/AssetBundle/{ assetBundle.Id }/File?platform=0";
+            url = $"{ ConnectionManager.Instance.ApiUrl }/Api/AssetBundle/{ assetBundle.Id }/File?platform=0";
 #endif
             UILog.Instance.WriteLn($"Download file from url:\n{ url }");
             var apiRequest = UnityWebRequest.Get(url);

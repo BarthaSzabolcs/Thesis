@@ -62,11 +62,26 @@ namespace DataAcces
                 Modified = recognizedResource.Modified
             };
 
-            var sql = recognizedObjectTable.InsertOrReplace(recognizedModel);
+            var contentModel = new Content()
+            {
+                Id = recognizedResource.Content.Id,
+                Name = recognizedResource.Content.Name,
+                AssetBundleId = recognizedResource.Content.AssetBundle.Id,
+                Modified = recognizedResource.Content.Modified,
+            };
+
+            var assetBundleModel = new AssetBundle()
+            {
+                Id = recognizedResource.Content.AssetBundle.Id,
+                Name = recognizedResource.Content.AssetBundle.Name,
+                Modified = recognizedResource.Content.AssetBundle.Modified
+            };
 
             using (var con = Connection)
             {
-                con.Execute(sql);
+                con.Execute(recognizedObjectTable.InsertOrReplace(recognizedModel));
+                con.Execute(contentTable.InsertOrReplace(contentModel));
+                con.Execute(assetBundleTable.InsertOrReplace(assetBundleModel));
             }
         }
     }
