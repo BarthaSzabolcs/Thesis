@@ -22,6 +22,7 @@ public class DataSetManager : MonoBehaviour
     [Header("Test:")]
     [SerializeField] private GameObject trackablePrefab;
     [SerializeField] private TMP_InputField dataSetID;
+    [SerializeField] private DataSetManagerUI managerUI;
 
     #endregion
     #region Hide in editor
@@ -78,10 +79,12 @@ public class DataSetManager : MonoBehaviour
         if (ConnectionManager.Instance.ApiDataAccesMode == ApiDataAcces.Online)
         {
             yield return FetchDataSetsOnline();
+            // managerUI.OnlineMenu(dataSetModels, repository.GetDataSets());
         }
         else
         {
             FetchDataSetsOffline();
+            managerUI.OfflineMenu(repository.GetDataSets());
         }
 
         // ToDo - UI for possible instances

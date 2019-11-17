@@ -11,6 +11,8 @@ public class UILog : MonoBehaviour
 {
     #region Show in editor
 
+    [SerializeField] bool minimizeOnStart;
+
     [Header("Logs:")]
     [SerializeField] bool showException;
     [SerializeField] bool showWarning;
@@ -57,6 +59,11 @@ public class UILog : MonoBehaviour
     private void Start()
     {
         viewportHeight = consoleTransform.rect.height;
+
+        if (minimizeOnStart)
+        {
+            ToggleConsole();
+        }
     }
     private void OnEnable()
     {
