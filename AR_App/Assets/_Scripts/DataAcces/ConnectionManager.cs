@@ -52,12 +52,12 @@ public class ConnectionManager : MonoBehaviour
         if (testRequest.error != null)
         {
             ApiDataAccesMode = ApiDataAcces.Offline;
-            UILog.Instance.WriteLn("API offline.");
+            ConsoleGUI.Instance.WriteLn("API offline.");
         }
         else
         {
             ApiDataAccesMode = ApiDataAcces.Online;
-            UILog.Instance.WriteLn("API online.");
+            ConsoleGUI.Instance.WriteLn("API online.");
         }
     }
 }

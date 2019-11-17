@@ -9,7 +9,7 @@ public class AssetBundleManager : MonoBehaviour
     #region Hide in editor
 
     public static AssetBundleManager Instance { get; private set; }
-    public Dictionary<string, AssetBundle> Loaded { get; set; } = new Dictionary<string, AssetBundle>();
+    public Dictionary<int, AssetBundle> Loaded { get; set; } = new Dictionary<int, AssetBundle>();
 
     private string CachePath => Path.Combine(Application.persistentDataPath, "AssetBundles");
 
@@ -36,11 +36,11 @@ public class AssetBundleManager : MonoBehaviour
 
     public IEnumerator Load(DataModels.AssetBundle assetBundleModel)
     {
-        UILog.Instance.WriteLn($"Load AssetBundle { assetBundleModel.Name }.");
+        ConsoleGUI.Instance.WriteLn($"Load AssetBundle { assetBundleModel.Name }.");
 
-        if (Loaded.ContainsKey(assetBundleModel.Name))
+        if (Loaded.ContainsKey(assetBundleModel.Id))
         {
-            UILog.Instance.WriteLn($"AssetBundle { assetBundleModel.Name } is already loaded.", Color.green);
+            ConsoleGUI.Instance.WriteLn($"AssetBundle { assetBundleModel.Name } is already loaded.", Color.green);
             yield break;
         }
 
@@ -53,14 +53,14 @@ public class AssetBundleManager : MonoBehaviour
         string url = Path.Combine(CachePath, assetBundle.Name);
         if (File.Exists(url) == false)
         {
-            UILog.Instance.WriteLn(url + " checked. Cached file not found.");
+            ConsoleGUI.Instance.WriteLn(url + " checked. Cached file not found.");
 
 #if UNITY_ANDROID && !UNITY_EDITOR
             url = $"{ ConnectionManager.Instance.ApiUrl }/Api/AssetBundle/{ assetBundle.Id }/File?platform=1";
 #else
             url = $"{ ConnectionManager.Instance.ApiUrl }/Api/AssetBundle/{ assetBundle.Id }/File?platform=0";
 #endif
-            UILog.Instance.WriteLn($"Download file from url:\n{ url }");
+            ConsoleGUI.Instance.WriteLn($"Download file from url:\n{ url }");
             var apiRequest = UnityWebRequest.Get(url);
             yield return apiRequest.SendWebRequest();
 
@@ -71,34 +71,34 @@ public class AssetBundleManager : MonoBehaviour
             {
 
                 File.WriteAllBytes(url, recievedData);
-                UILog.Instance.WriteLn("Save file to local cache: " + url, Color.green);
+                ConsoleGUI.Instance.WriteLn("Save file to local cache: " + url, Color.green);
             }
             else
             {
-                UILog.Instance.WriteLn("File not found on the server", Color.red);
+                ConsoleGUI.Instance.WriteLn("File not found on the server", Color.red);
                 yield break;
             }
         }
         else
         {
-            UILog.Instance.WriteLn(url + " checked. Cached file found.", Color.green);
+            ConsoleGUI.Instance.WriteLn(url + " checked. Cached file found.", Color.green);
         }
     }
     private void LoadFromMemory(DataModels.AssetBundle assetBundleModel)
     {
         var url = Path.Combine(CachePath, assetBundleModel.Name);
 
-        UILog.Instance.WriteLn($"Load AssetBundle { assetBundleModel.Name } from memory:\n{ url }");
+        ConsoleGUI.Instance.WriteLn($"Load AssetBundle { assetBundleModel.Name } from memory:\n{ url }");
         var assetBundle = AssetBundle.LoadFromFile(url);
 
         if (assetBundle != null)
         {
-            Loaded.Add(assetBundleModel.Name, assetBundle);
-            UILog.Instance.WriteLn($"Load of AssetBundle { assetBundleModel.Name } successful.", Color.green);
+            Loaded.Add(assetBundleModel.Id, assetBundle);
+            ConsoleGUI.Instance.WriteLn($"Load of AssetBundle { assetBundleModel.Name } successful.", Color.green);
         }
         else
         {
-            UILog.Instance.WriteLn($"Load of AssetBundle { assetBundleModel.Name } failed.", Color.red);
+            ConsoleGUI.Instance.WriteLn($"Load of AssetBundle { assetBundleModel.Name } failed.", Color.red);
         }
     }
 }

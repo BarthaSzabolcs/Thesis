@@ -1,6 +1,4 @@
 ﻿using DataModels;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +16,9 @@ public class MenuItem_DataSet : MonoBehaviour
     #region Show in editor
 
     [SerializeField] Button downloadButton;
+    [SerializeField] Button infoButton;
+    [SerializeField] Button loadButton;
+
     [SerializeField] TextMeshProUGUI name_text;
 
     [Header("Icons:")]
@@ -33,9 +34,15 @@ public class MenuItem_DataSet : MonoBehaviour
 
     public void Initialize(DataSet model, DataSetState state)
     {
+        this.model = model;
+
         if (state == DataSetState.UpToDate || state == DataSetState.NoInternet)
         {
             downloadButton.interactable = false;
+        }
+        else if(state == DataSetState.ApiOnly)
+        {
+            loadButton.interactable = false;
         }
         else if(state == DataSetState.NeedUpdate)
         {
@@ -43,16 +50,41 @@ public class MenuItem_DataSet : MonoBehaviour
         }
 
         name_text.text = model.Name;
+
+        downloadButton.onClick.AddListener(DownloadFile);
+        loadButton.onClick.AddListener(LoadFile);
+        // infoButton.onClick.AddListener(ShowInfo);
     }
 
-    public void Download()
+    private void DownloadFile()
     {
-        // ToDo - Download DataSet
+        StartCoroutine(DataSetManager.Instance.FetchFile(
+            model, 
+            true, 
+            (succes) => 
+            {
+                if (succes)
+                {
+                    downloadButton.interactable = false;
+                }
+            }));
     }
 
-    public void ShowInfo()
+    private void LoadFile()
     {
-        // ToDo - Show Info
+        DataSetManager.Instance.OpenDataset(model, 
+            (succes) =>
+            {
+                if (succes)
+                {
+                    loadButton.interactable = false;
+                }
+            });
+    }
+
+    private void ShowInfo()
+    {
+        
     }
 
 }

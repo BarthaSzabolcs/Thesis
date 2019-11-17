@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DataSetManagerUI : MonoBehaviour
 {
@@ -13,38 +14,69 @@ public class DataSetManagerUI : MonoBehaviour
     [SerializeField] private RectTransform panelTransform;
     [SerializeField] private GameObject menuItemPrefab;
     [SerializeField] private TextMeshProUGUI modeText;
+    [SerializeField] private Button menuButton;
 
     #endregion
 
     public void OfflineMenu(IEnumerable<DataSet> offline)
     {
-        SpawnMenuItems(offline, DataSetState.NoInternet);
+        ClearList();
+
+        var dataSetsWithState = offline.Select(offlineSet => (offlineSet, DataSetState.NoInternet));
+
+        SpawnMenuItems(dataSetsWithState);
 
         modeText.text = "Offline mode";
 
         canvas.SetActive(true);
     }
-    public void OnlineMenu(IEnumerable<DataSet> offline, IEnumerable<DataSet> online)
+    public void OnlineMenu(IEnumerable<DataSet> online, IEnumerable<DataSet> offline)
     {
-        var upToDate = offline.Where(off => online.First(on => on.Id == off.Id)?.Modified == off.Modified);
-        var needUpDate = offline.Where(off => online.First(on => on.Id == off.Id)?.Modified == off.Modified);
-        var apiOnly = online.Where(on => offline.Any(off => off.Id == on.Id) == false);
+        ClearList();
 
-        SpawnMenuItems(upToDate, DataSetState.UpToDate);
-        SpawnMenuItems(needUpDate, DataSetState.NeedUpdate);
-        SpawnMenuItems(apiOnly, DataSetState.ApiOnly);
+        var modelsWithState = new Dictionary<int, (DataSet dataSet, DataSetState state)>();
+
+        foreach (var onlineSet in online)
+        {
+            modelsWithState.Add(onlineSet.Id, (onlineSet, DataSetState.ApiOnly));
+        }
+
+        foreach (var offlineSet in offline)
+        {
+            if (modelsWithState.TryGetValue(offlineSet.Id, out var item))
+            {
+                if (item.dataSet.Modified == offlineSet.Modified)
+                {
+                    modelsWithState[offlineSet.Id] = (item.dataSet, DataSetState.UpToDate);
+                }
+                else
+                {
+                    modelsWithState[offlineSet.Id] = (item.dataSet, DataSetState.NeedUpdate);
+                }
+            }
+        }
 
         modeText.text = "Online mode";
+
+        SpawnMenuItems(modelsWithState.Values);
 
         canvas.SetActive(true);
     }
 
-    private void SpawnMenuItems(IEnumerable<DataSet> models, DataSetState state)
+    private void SpawnMenuItems(IEnumerable<(DataSet dataSet, DataSetState state)> modelsWithState)
     {
-        foreach (var model in models)
+        foreach (var modelWithState in modelsWithState)
         {
             var instance = Instantiate(menuItemPrefab, panelTransform);
-            instance.GetComponent<MenuItem_DataSet>().Initialize(model, state);
+            instance.GetComponent<MenuItem_DataSet>().Initialize(modelWithState.dataSet, modelWithState.state);
+        }
+    }
+
+    private void ClearList()
+    {
+        for (int i = panelTransform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(panelTransform.GetChild(i).gameObject);
         }
     }
 

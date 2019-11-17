@@ -12,6 +12,7 @@ using DataResources;
 using DataAcces;
 using System.Data.SqlClient;
 using Mono.Data.Sqlite;
+using System;
 
 public enum ApiDataAcces { Offline, Online }
 
@@ -30,8 +31,9 @@ public class DataSetManager : MonoBehaviour
     public static DataSetManager Instance { get; private set; }
     private string CachePath => Path.Combine(Application.persistentDataPath, "DataSets");
 
-    private Dictionary<string, RecognizedObjectResource> objectInfos;
-    private List<DataModels.DataSet> dataSetModels;
+    // private Dictionary<string, RecognizedObjectResource> objectInfos;
+    private List<DataModels.DataSet> avaliableSets;
+    private List<int> loadedSetIds = new List<int>();
     private DataSetRepository repository;
 
     #endregion
@@ -55,31 +57,18 @@ public class DataSetManager : MonoBehaviour
     private void Start()
     {
         repository = new DataSetRepository();
-
-        StartCoroutine(GetPossibleDataSets());
     }
 
     #endregion
 
-    public void Test()
-    {
-        var id = 1;
-        var dataSet = dataSetModels.Find(x => x.Id == id);
-
-        if (dataSet != null)
-        {
-            StartCoroutine(FetchFile(dataSet));
-        }
-    }
-
-    private IEnumerator GetPossibleDataSets()
+    private IEnumerator FetchPossibleDataSets()
     {
         yield return ConnectionManager.Instance.TestApiAcces();
 
         if (ConnectionManager.Instance.ApiDataAccesMode == ApiDataAcces.Online)
         {
             yield return FetchDataSetsOnline();
-            // managerUI.OnlineMenu(dataSetModels, repository.GetDataSets());
+            managerUI.OnlineMenu(avaliableSets, repository.GetDataSets());
         }
         else
         {
@@ -87,34 +76,33 @@ public class DataSetManager : MonoBehaviour
             managerUI.OfflineMenu(repository.GetDataSets());
         }
 
-        // ToDo - UI for possible instances
-        UILog.Instance.Write("DataSets:\n");
-        foreach (var dataSetModel in dataSetModels)
+        ConsoleGUI.Instance.Write("DataSets:\n");
+        foreach (var dataSetModel in avaliableSets)
         {
-            UILog.Instance.Write($"Id: {dataSetModel.Id}\tName: '{dataSetModel.Name}'\n", "");
+            ConsoleGUI.Instance.Write($"Id: {dataSetModel.Id}\tName: '{dataSetModel.Name}'\n", "");
         }
-        UILog.Instance.Write("=======================\n\n", "");
+        ConsoleGUI.Instance.Write("=======================\n\n", "");
     }
-    
-    private IEnumerator FetchFile(DataModels.DataSet dataSet)
+
+    public IEnumerator FetchFile(DataModels.DataSet dataSet, bool ignoreCache = false, Action<bool> callback = null)
     {
         string url = Path.Combine(CachePath, dataSet.Name);
         bool present = false;
 
         if (ConnectionManager.Instance.ApiDataAccesMode == ApiDataAcces.Offline)
         {
-            UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } from cache.");
+            ConsoleGUI.Instance.WriteLn($"Loading DataSet { dataSet.Name } from cache.");
             present = LoadFile(dataSet);
         }
         else if (ConnectionManager.Instance.ApiDataAccesMode == ApiDataAcces.Online)
         {
-            UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } from the API.");
+            ConsoleGUI.Instance.WriteLn($"Loading DataSet { dataSet.Name } from the API.");
 
-            if (File.Exists(url + ".xml") == false)
+            if (File.Exists(url + ".xml") == false || ignoreCache)
             {
                 yield return DownloadFile(dataSet, true);
             }
-            if (File.Exists(url + ".dat") == false)
+            if (File.Exists(url + ".dat") == false || ignoreCache)
             {
                 yield return DownloadFile(dataSet, false);
             }
@@ -126,31 +114,33 @@ public class DataSetManager : MonoBehaviour
         {
             InitializeTrackables(dataSet);
         }
+
+        callback?.Invoke(present);
     }
     private IEnumerator FetchDataSetsOnline()
     {
         var url = $"{ ConnectionManager.Instance.ApiUrl }/Api/DataSet";
-        UILog.Instance.WriteLn($"Reqeust DataSets online:\nurl:{url}");
+        ConsoleGUI.Instance.WriteLn($"Reqeust DataSets online:\nurl:{url}");
 
         var apiRequest = UnityWebRequest.Get(url);
 
         yield return apiRequest.SendWebRequest();
-        UILog.Instance.WriteLn($"Response arrived.");
+        ConsoleGUI.Instance.WriteLn($"Response arrived.");
 
         var jsonResponse = apiRequest.downloadHandler.text;
-        dataSetModels = JsonConvert.DeserializeObject<List<DataModels.DataSet>>(jsonResponse);
+        avaliableSets = JsonConvert.DeserializeObject<List<DataModels.DataSet>>(jsonResponse);
     }
     private void FetchDataSetsOffline()
     {
-        dataSetModels = repository.GetDataSets().ToList();
-        UILog.Instance.WriteLn($"DataSets loaded from cache.");
+        avaliableSets = repository.GetDataSets().ToList();
+        ConsoleGUI.Instance.WriteLn($"DataSets loaded from cache.");
     }
 
     private IEnumerator DownloadFile(DataModels.DataSet dataSet, bool isXml)
     {
         var url = $"{ ConnectionManager.Instance.ApiUrl }/api/DataSet/{ dataSet.Id }/File?isXml={ isXml }";
 
-        UILog.Instance.WriteLn($"Download File: { dataSet.Name + (isXml ? ".xml" : ".dat") }\nurl: { url }");
+        ConsoleGUI.Instance.WriteLn($"Download File: { dataSet.Name + (isXml ? ".xml" : ".dat") }\nurl: { url }");
         var request = UnityWebRequest.Get(url);
         yield return request.SendWebRequest();
 
@@ -161,16 +151,19 @@ public class DataSetManager : MonoBehaviour
             File.WriteAllBytes(path, request.downloadHandler.data);
 
             repository.CacheDataSet(dataSet);
-            UILog.Instance.WriteLn($"File { dataSet.Name } { (isXml ? ".xml" : ".dat") } is cached to:\n{ path }", Color.green);
+            ConsoleGUI.Instance.WriteLn($"File { dataSet.Name } { (isXml ? ".xml" : ".dat") } is cached to:\n{ path }", Color.green);
         }
         else
         {
-            UILog.Instance.WriteLn($"Could not find { dataSet.Name } from the server.", Color.red);
+            ConsoleGUI.Instance.WriteLn($"Could not find { dataSet.Name } from the server.", Color.red);
         }
     }
     private bool LoadFile(DataModels.DataSet dataSet)
     {
         var result = false;
+
+        if (loadedSetIds.Contains(dataSet.Id))
+            return result;
 
         ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
         DataSet loadedDataSet = objectTracker.CreateDataSet();
@@ -179,16 +172,17 @@ public class DataSetManager : MonoBehaviour
 
         if (loadedDataSet.Load(path, VuforiaUnity.StorageType.STORAGE_ABSOLUTE))
         {
-            UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } succeded.", Color.green);
+            ConsoleGUI.Instance.WriteLn($"Loading DataSet { dataSet.Name } succeded.", Color.green);
             objectTracker.Stop();
 
             if (objectTracker.ActivateDataSet(loadedDataSet) == false)
             {
-                UILog.Instance.WriteLn($"Could not activate DataSet { dataSet.Name }.", Color.red);
+                ConsoleGUI.Instance.WriteLn($"Could not activate DataSet { dataSet.Name }.", Color.red);
             }
             else
             {
-                UILog.Instance.WriteLn($"DataSet { dataSet.Name } activated.", Color.green);
+                ConsoleGUI.Instance.WriteLn($"DataSet { dataSet.Name } activated.", Color.green);
+                loadedSetIds.Add(dataSet.Id);
                 result = true;
             }
 
@@ -196,7 +190,7 @@ public class DataSetManager : MonoBehaviour
         }
         else
         {
-            UILog.Instance.WriteLn($"Loading DataSet { dataSet.Name } failed.", Color.red);
+            ConsoleGUI.Instance.WriteLn($"Loading DataSet { dataSet.Name } failed.", Color.red);
         }
 
         return result;
@@ -207,7 +201,7 @@ public class DataSetManager : MonoBehaviour
 
         foreach (TrackableBehaviour trackable in trackables)
         {
-            UILog.Instance.WriteLn($"Loading Trackable '{ trackable.TrackableName }' succeded.");
+            ConsoleGUI.Instance.WriteLn($"Loading Trackable '{ trackable.TrackableName }' succeded.");
 
             if (trackable.name == "New Game Object")
             {
@@ -219,4 +213,25 @@ public class DataSetManager : MonoBehaviour
             }
         }
     }
+
+    #region Button Actions
+
+    public void OpenDataset(DataModels.DataSet model, Action<bool> callback = null)
+    {
+        var succes = LoadFile(model);
+
+        if (succes)
+        {
+            InitializeTrackables(model);
+        }
+
+        callback?.Invoke(succes);
+    }
+
+    public void OpenDataSetMenu()
+    {
+        StartCoroutine(FetchPossibleDataSets());
+    }
+
+    #endregion
 }

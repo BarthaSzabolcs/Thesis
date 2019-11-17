@@ -31,12 +31,12 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
                 {
                     OnTrackingStart?.Invoke();
 
-                    UILog.Instance.WriteLn($"Object found:\nId:{recognizedObject?.Id} Name: {recognizedObject?.Name}", Color.magenta);
+                    ConsoleGUI.Instance.WriteLn($"Object found:\nId:{recognizedObject?.Id} Name: {recognizedObject?.Name}", Color.magenta);
                 }
                 else
                 {
                     OnTrackingEnd?.Invoke();
-                    UILog.Instance.WriteLn($"Object lost:\nId:{recognizedObject?.Id} Name: {recognizedObject?.Name}", Color.magenta);
+                    ConsoleGUI.Instance.WriteLn($"Object lost:\nId:{recognizedObject?.Id} Name: {recognizedObject?.Name}", Color.magenta);
                 }
             }
             visible = value;
@@ -78,22 +78,22 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
 
             if (recognizedObject != null)
             {
-                UILog.Instance.WriteLn($"RecognizedObject info found on server with an id of { id }", Color.green);
+                ConsoleGUI.Instance.WriteLn($"RecognizedObject info found on server with an id of { id }", Color.green);
                 yield return AssetBundleManager.Instance.Load(recognizedObject.Content.AssetBundle);
 
-                var assetBundle = AssetBundleManager.Instance.Loaded[recognizedObject.Content.AssetBundle.Name];
+                var assetBundle = AssetBundleManager.Instance.Loaded[recognizedObject.Content.AssetBundle.Id];
                 var contentGO = assetBundle.LoadAsset(recognizedObject.Content.Name);
 
                 Instantiate(contentGO, transform);
             }
             else
             {
-                UILog.Instance.WriteLn($"RecognizedObject info not found on server with an id of { id }", Color.red);
+                ConsoleGUI.Instance.WriteLn($"RecognizedObject info not found on server with an id of { id }", Color.red);
             }
         }
         else
         {
-            UILog.Instance.WriteLn("Could not parse the name of the trackable as an int.\nFix the DataSet.", Color.red);
+            ConsoleGUI.Instance.WriteLn("Could not parse the name of the trackable as an int.\nFix the DataSet.", Color.red);
         }
     }
 

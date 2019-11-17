@@ -7,7 +7,7 @@ using System.IO;
 using CustomDebug;
 using UnityEngine.UI;
 
-public class UILog : MonoBehaviour
+public class ConsoleGUI : MonoBehaviour
 {
     #region Show in editor
 
@@ -37,7 +37,7 @@ public class UILog : MonoBehaviour
     #endregion
     #region Hide in editor
 
-    public static UILog Instance;
+    public static ConsoleGUI Instance;
     private float viewportHeight;
 
     #endregion
@@ -115,7 +115,6 @@ public class UILog : MonoBehaviour
 
         var size = logText.GetPreferredValues();
         logTextTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
-        // scrollbar.value = 0;
     }
 
     public void Clear()
