@@ -107,7 +107,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_enableWordWrapping: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_firstOverflowCharacterIndex: -1
@@ -292,6 +292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6591ae3e867a0924f8904f1cdbbe6c07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textMargin: 40
   normalButtonColor: {r: 0.1764706, g: 0.1764706, b: 0.1882353, a: 0.88235295}
   selectedButtonColor: {r: 0.30588236, g: 0.78823537, b: 0.6901961, a: 1}
   normalTextColor: {r: 0.30588236, g: 0.78823537, b: 0.6901961, a: 1}

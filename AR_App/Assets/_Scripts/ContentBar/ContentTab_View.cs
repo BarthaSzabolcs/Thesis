@@ -14,6 +14,8 @@ namespace ContentBar
     {
         #region Show in editor
 
+        [SerializeField] private float textMargin;
+
         [Header("Colors")]
         [SerializeField] private Color normalButtonColor;
         [SerializeField] private Color selectedButtonColor;
@@ -70,6 +72,10 @@ namespace ContentBar
         private void HandleNameChange()
         {
             nameText.text = Model.Name;
+
+            var correctWidth = nameText.preferredWidth + textMargin * 2;
+            var buttonRectTransform = buttonImage.gameObject.GetComponent<RectTransform>();
+            buttonRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, correctWidth);
         }
 
         private void HandleOpenChange()
