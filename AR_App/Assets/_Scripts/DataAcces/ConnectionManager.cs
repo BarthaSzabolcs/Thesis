@@ -13,6 +13,7 @@ public class ConnectionManager : MonoBehaviour
 
     [SerializeField] private ConnectionConfig connectionConfig;
     [SerializeField] private string relativeCachePath;
+    [SerializeField] private int timeoutInSeconds;
 
     #endregion
     #region Hide in editor
@@ -20,7 +21,7 @@ public class ConnectionManager : MonoBehaviour
     public static ConnectionManager Instance { get; set; }
     public string ApiUrl { get; private set; }
     public SqliteConnection CacheConnection { get; private set; }
-    public ApiState ApiState { get; set; }
+    public bool ApiReachable { get; set; }
 
     #endregion
 
@@ -46,18 +47,10 @@ public class ConnectionManager : MonoBehaviour
     public IEnumerator TestApiAcces()
     {
         var testRequest = UnityWebRequest.Get(ApiUrl);
+        testRequest.timeout = timeoutInSeconds;
 
         yield return testRequest.SendWebRequest();
 
-        if (testRequest.error != null)
-        {
-            ApiState = ApiState.Offline;
-            //ConsoleGUI.Instance.WriteLn("API offline.");
-        }
-        else
-        {
-            ApiState = ApiState.Online;
-            //ConsoleGUI.Instance.WriteLn("API online.");
-        }
+        ApiReachable = testRequest.error is null;
     }
 }

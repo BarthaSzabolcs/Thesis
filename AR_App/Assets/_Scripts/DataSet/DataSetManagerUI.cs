@@ -25,9 +25,7 @@ public class DataSetManagerUI : MonoBehaviour
 
     public void OpenMenu(IEnumerable<DataSetInfo_Model> dataSetInfos)
     {
-        modeText.text = ConnectionManager.Instance.ApiState == ApiState.Online ?
-            "Online":
-            "Offline";
+        modeText.text = ConnectionManager.Instance.ApiReachable ? "Online" : "Offline";
 
         PopulateMenu(dataSetInfos);
 

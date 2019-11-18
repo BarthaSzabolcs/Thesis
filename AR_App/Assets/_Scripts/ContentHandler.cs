@@ -102,7 +102,7 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
     {
         var repo = new RecognizedObjectRepository();
 
-        if (ConnectionManager.Instance.ApiState == ApiState.Online)
+        if (ConnectionManager.Instance.ApiReachable)
         {
             var url = $"{ ConnectionManager.Instance.ApiUrl }/api/RecognizedObject/{ id }";
 

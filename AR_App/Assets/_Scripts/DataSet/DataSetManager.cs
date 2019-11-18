@@ -13,8 +13,6 @@ using CustomConsole;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-public enum ApiState { Offline, Online }
-
 public class DataSetManager : MonoBehaviour
 {
     #region Show in editor
@@ -23,7 +21,6 @@ public class DataSetManager : MonoBehaviour
     [SerializeField] private GameObject trackablePrefab;
     [SerializeField] private TMP_InputField dataSetID;
     [SerializeField] private DataSetManagerUI managerUI;
-    [SerializeField] private int timeoutInSeconds;
 
     #endregion
     #region Hide in editor
@@ -76,6 +73,22 @@ public class DataSetManager : MonoBehaviour
     {
         StartCoroutine(FetchDataSets());
     }
+    //public void CloseDataset(DataModels.DataSet model, Action<bool> callback = null)
+    //{
+    //    if (dataSetInfos.TryGetValue(model.Id, out var info) && info.Loaded != null)
+    //    {
+    //        ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
+    //        objectTracker.Stop();
+
+    //        objectTracker.DeactivateDataSet(info.Loaded);
+    //        objectTracker.DestroyDataSet(info.Loaded, false);
+            
+
+    //        info.Loaded = null;
+
+    //        objectTracker.Start();
+    //    }
+    //}
 
     #endregion
 
@@ -83,7 +96,7 @@ public class DataSetManager : MonoBehaviour
     {
         yield return ConnectionManager.Instance.TestApiAcces();
 
-        if (ConnectionManager.Instance.ApiState == ApiState.Online)
+        if (ConnectionManager.Instance.ApiReachable)
         {
             yield return FetchDataSetsFromApi();
         }
@@ -97,7 +110,6 @@ public class DataSetManager : MonoBehaviour
 
         var url = $"{ ConnectionManager.Instance.ApiUrl }/Api/DataSet";
         var apiRequest = UnityWebRequest.Get(url);
-        apiRequest.timeout = timeoutInSeconds;
 
         yield return apiRequest.SendWebRequest();
 
@@ -139,7 +151,7 @@ public class DataSetManager : MonoBehaviour
     {
         string url = Path.Combine(CachePath, dataSet.Name);
 
-        if (ConnectionManager.Instance.ApiState == ApiState.Online)
+        if (ConnectionManager.Instance.ApiReachable)
         {
             Debug.Log($"Loading DataSet { dataSet.Name } from API.");
 

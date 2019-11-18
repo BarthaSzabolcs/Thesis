@@ -21,21 +21,21 @@ public class DataSetInfo_View : MonoBehaviour
     #endregion
     #region Hide in editor
 
-    private DataSetInfo_Model info;
-    public DataSetInfo_Model Info
+    private DataSetInfo_Model model;
+    public DataSetInfo_Model Model
     {
-        get => info;
+        get => model;
         set
         {
-            if (info != null)
+            if (model != null)
             {
-                info.PropertyChanged -= HandlePropertyChanged;
+                model.PropertyChanged -= HandlePropertyChanged;
             }
             if (value != null)
             {
                 value.PropertyChanged += HandlePropertyChanged;
             }
-            info = value;
+            model = value;
         }
     }
 
@@ -45,49 +45,52 @@ public class DataSetInfo_View : MonoBehaviour
 
     public void OnDestroy()
     {
-        info.PropertyChanged -= HandlePropertyChanged;
+        model.PropertyChanged -= HandlePropertyChanged;
     }
 
     #endregion
 
     public void Initialize(DataSetInfo_Model info)
     {
-        Info = info;
+        Model = info;
 
         var dataSet = info.Api ?? info.Cache;
 
         name_text.text = dataSet.Name;
 
-        loadButton.interactable = info.Loaded is null;
+        loadButton.interactable = info.Loaded is null && info.Cache != null;
 
-        if (info.Cache != null && info.Syncronised == false)
+        if (ConnectionManager.Instance.ApiReachable)
         {
-            downloadButton.GetComponent<Image>().sprite = updateIcon;
+            if (info.Cache != null)
+            {
+                if (info.Syncronised == false)
+                {
+                    downloadButton.GetComponent<Image>().sprite = updateIcon;
+                }
+                else
+                {
+                    downloadButton.gameObject.SetActive(false);
+                }
+            }
         }
         else
         {
-            downloadButton.GetComponent<Image>().sprite = downloadIcon;
-            downloadButton.interactable = info.Cache is null;
+            downloadButton.gameObject.SetActive(false);
         }
 
         downloadButton.onClick.AddListener(DownloadFile);
         loadButton.onClick.AddListener(LoadFile);
-        // infoButton.onClick.AddListener(ShowInfo);
     }
 
     private void DownloadFile()
     {
-        StartCoroutine(DataSetManager.Instance.OpenFile(info.Api, true));
+        StartCoroutine(DataSetManager.Instance.OpenFile(model.Api, true));
     }
 
     private void LoadFile()
     {
-        DataSetManager.Instance.OpenDataset(info.Prefered);
-    }
-
-    private void ShowInfo()
-    {
-        
+        DataSetManager.Instance.OpenDataset(model.Prefered);
     }
 
     private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -95,14 +98,14 @@ public class DataSetInfo_View : MonoBehaviour
         switch (e.PropertyName)
         {
             case nameof(DataSetInfo_Model.Loaded):
-                loadButton.interactable = info.Loaded is null;
+                loadButton.interactable = model.Loaded is null;
                 break;
 
             case nameof(DataSetInfo_Model.Api):
                 break;
 
             case nameof(DataSetInfo_Model.Cache):
-                if (info.Syncronised)
+                if (model.Syncronised)
                 {
                     downloadButton.GetComponent<Image>().sprite = downloadIcon;
                     downloadButton.interactable = false;
