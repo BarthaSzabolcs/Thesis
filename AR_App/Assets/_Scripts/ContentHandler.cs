@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using Vuforia;
+using CustomConsole;
 
 public class ContentHandler : MonoBehaviour, ITrackableEventHandler
 {
@@ -101,7 +102,7 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
     {
         var repo = new RecognizedObjectRepository();
 
-        if (ConnectionManager.Instance.ApiDataAccesMode == ApiDataAcces.Online)
+        if (ConnectionManager.Instance.ApiState == ApiState.Online)
         {
             var url = $"{ ConnectionManager.Instance.ApiUrl }/api/RecognizedObject/{ id }";
 

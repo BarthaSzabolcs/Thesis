@@ -412,6 +412,7 @@ MonoBehaviour:
   trackablePrefab: {fileID: 0}
   dataSetID: {fileID: 0}
   managerUI: {fileID: 276855245}
+  timeoutInSeconds: 0
 --- !u!114 &276855243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -436,7 +437,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b02b665e1e6de8248b40bc7bb491af8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connectionConfig: {fileID: 11400000, guid: d43643cac8190f845a723eeedc2bfcd9, type: 2}
+  connectionConfig: {fileID: 11400000, guid: 682ad2cde104ca34ab352756ceb48d65, type: 2}
   relativeCachePath: Cache.db
 --- !u!114 &276855245
 MonoBehaviour:
@@ -456,6 +457,7 @@ MonoBehaviour:
     type: 3}
   modeText: {fileID: 1372016187}
   menuButton: {fileID: 0}
+  views: []
 --- !u!1 &420896435
 GameObject:
   m_ObjectHideFlags: 0
@@ -1791,6 +1793,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6451708683838788493, guid: 6d04228d17fdec242925260ec5bbf4bd,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6451708683906370658, guid: 6d04228d17fdec242925260ec5bbf4bd,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1912,6 +1919,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1544494140, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
+      propertyPath: logTags.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544494140, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
       propertyPath: warningColor.r
       value: 0.8980392
       objectReference: {fileID: 0}
@@ -1949,7 +1960,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1544494140, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
       propertyPath: showDebug
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1544494140, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
       propertyPath: showWarning
@@ -1962,6 +1973,30 @@ PrefabInstance:
     - target: {fileID: 1544494140, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
       propertyPath: callerMemberIndentation
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544494140, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
+      propertyPath: logTags.Array.data[0].tag
+      value: succes
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544494140, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
+      propertyPath: logTags.Array.data[0].color.r
+      value: 0.30588236
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544494140, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
+      propertyPath: logTags.Array.data[0].color.g
+      value: 0.78823537
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544494140, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
+      propertyPath: logTags.Array.data[0].color.b
+      value: 0.6901961
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544494140, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
+      propertyPath: logTags.Array.data[0].color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544494140, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
+      propertyPath: parseTags
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1319355150, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
       propertyPath: m_AnchorMin.y
@@ -2052,11 +2087,6 @@ PrefabInstance:
     - target: {fileID: 1319355151, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
       propertyPath: m_margin.w
       value: -16.732254
-      objectReference: {fileID: 0}
-    - target: {fileID: 6451708683838788493, guid: 6d04228d17fdec242925260ec5bbf4bd,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 171791978, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size

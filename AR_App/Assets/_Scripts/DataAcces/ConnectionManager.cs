@@ -20,7 +20,7 @@ public class ConnectionManager : MonoBehaviour
     public static ConnectionManager Instance { get; set; }
     public string ApiUrl { get; private set; }
     public SqliteConnection CacheConnection { get; private set; }
-    public ApiDataAcces ApiDataAccesMode { get; set; }
+    public ApiState ApiState { get; set; }
 
     #endregion
 
@@ -51,13 +51,13 @@ public class ConnectionManager : MonoBehaviour
 
         if (testRequest.error != null)
         {
-            ApiDataAccesMode = ApiDataAcces.Offline;
-            ConsoleGUI.Instance.WriteLn("API offline.");
+            ApiState = ApiState.Offline;
+            //ConsoleGUI.Instance.WriteLn("API offline.");
         }
         else
         {
-            ApiDataAccesMode = ApiDataAcces.Online;
-            ConsoleGUI.Instance.WriteLn("API online.");
+            ApiState = ApiState.Online;
+            //ConsoleGUI.Instance.WriteLn("API online.");
         }
     }
 }
