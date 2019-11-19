@@ -11,13 +11,15 @@ namespace DataAcces
 
         public DataSetRepository()
         {
+            var sql = dataSetTable.CreateCommand();
+
             using (var con = ConnectionManager.Instance.CacheConnection)
             {
-                con.Execute(dataSetTable.CreateCommand());
+                con.Execute(sql);
             }
         }
 
-        public void CacheDataSet(DataSet dataSet)
+        public void Cache(DataSet dataSet)
         {
             var sql = dataSetTable.InsertOrReplace(dataSet);
 
@@ -27,13 +29,13 @@ namespace DataAcces
             }
         }
 
-        public IEnumerable<DataSet> GetDataSets()
+        public IEnumerable<DataSet> GetAll()
         {
             var sql = $"SELECT * FROM { dataSetTable.TableName }";
 
             using (var con = ConnectionManager.Instance.CacheConnection)
             {
-                return con.Query<DataSet>(sql: sql);
+                return con.Query<DataSet>(sql);
             }
         }
     }

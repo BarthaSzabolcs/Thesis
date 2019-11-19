@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Vuforia;
 using CustomConsole;
+using AssetBundleManagment;
 
 public class ContentHandler : MonoBehaviour, ITrackableEventHandler
 {
@@ -79,22 +80,22 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
 
             if (recognizedObject != null)
             {
-                ConsoleGUI.Instance.WriteLn($"RecognizedObject info found on server with an id of { id }", Color.green);
-                yield return AssetBundleManager.Instance.Load(recognizedObject.Content.AssetBundle);
+                yield return AssetBundleManager.Instance.UseBundle(recognizedObject.Content.AssetBundle, LoadContent);
 
-                var assetBundle = AssetBundleManager.Instance.Loaded[recognizedObject.Content.AssetBundle.Id];
-                var contentGO = assetBundle.LoadAsset(recognizedObject.Content.Name);
+            }
+        }
+    }
 
-                Instantiate(contentGO, transform);
-            }
-            else
-            {
-                ConsoleGUI.Instance.WriteLn($"RecognizedObject info not found on server with an id of { id }", Color.red);
-            }
+    private void LoadContent(AssetBundle assetBundle)
+    {
+        if (assetBundle != null)
+        {
+            var contentGO = assetBundle.LoadAsset(recognizedObject.Content.Name);
+            Instantiate(contentGO, transform);
         }
         else
         {
-            ConsoleGUI.Instance.WriteLn("Could not parse the name of the trackable as an int.\nFix the DataSet.", Color.red);
+            ConsoleGUI.Instance.WriteLn($"{recognizedObject.Name} failed to load AssetBundle.");
         }
     }
 

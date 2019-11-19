@@ -9,6 +9,7 @@ namespace DataAcces
     public class RecognizedObjectRepository
     {
         private IDbConnection Connection => ConnectionManager.Instance.CacheConnection;
+        private static bool uninitialized = true;
 
         private DataTableInfo<RecognizedObject> recognizedObjectTable = new DataTableInfo<RecognizedObject>();
         private DataTableInfo<Content> contentTable = new DataTableInfo<Content>();
@@ -17,12 +18,17 @@ namespace DataAcces
 
         public RecognizedObjectRepository()
         {
-            using (var con = ConnectionManager.Instance.CacheConnection)
+            if (uninitialized)
             {
-                con.Execute(recognizedObjectTable.CreateCommand());
-                con.Execute(contentTable.CreateCommand());
-                con.Execute(assetBundleTable.CreateCommand());
-                con.Execute(dataSetTable.CreateCommand());
+                using (var con = ConnectionManager.Instance.CacheConnection)
+                {
+                    con.Execute(recognizedObjectTable.CreateCommand());
+                    con.Execute(contentTable.CreateCommand());
+                    con.Execute(assetBundleTable.CreateCommand());
+                    con.Execute(dataSetTable.CreateCommand());
+                }
+
+                uninitialized = false;
             }
         }
 

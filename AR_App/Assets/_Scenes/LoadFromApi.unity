@@ -411,8 +411,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d797e6d85dc45a4fb11c40fb330c0cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackablePrefab: {fileID: 0}
-  dataSetID: {fileID: 0}
   managerUI: {fileID: 276855245}
 --- !u!114 &276855243
 MonoBehaviour:
@@ -486,10 +484,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39292e024edabfd418e0fcc0776e419b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minimizeOnStart: 0
+  minimizeOnStart: 1
   showException: 1
   showWarning: 1
-  showDebug: 0
+  showDebug: 1
   parseTags: 0
   logTags:
   - tag: succes
@@ -1372,7 +1370,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: e80435f1600ed1b4da75f595ff7ca7cc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1d52175ab07b1a946a8bab9bd3dbc54f, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2465,6 +2463,10 @@ PrefabInstance:
     - target: {fileID: 1319355151, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
       propertyPath: m_textInfo.pageCount
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1319355151, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
+      propertyPath: m_margin.z
+      value: -920.01733
       objectReference: {fileID: 0}
     - target: {fileID: 171791978, guid: 6d04228d17fdec242925260ec5bbf4bd, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
