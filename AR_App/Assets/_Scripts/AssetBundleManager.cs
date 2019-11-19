@@ -13,6 +13,7 @@ public class AssetBundleManager : MonoBehaviour
     public Dictionary<int, AssetBundle> Loaded { get; set; } = new Dictionary<int, AssetBundle>();
 
     private string CachePath => Path.Combine(Application.persistentDataPath, "AssetBundles");
+    // ToDo - Manage as the DataSetManager
 
     #endregion
 

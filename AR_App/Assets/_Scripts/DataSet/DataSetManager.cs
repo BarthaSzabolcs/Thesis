@@ -73,22 +73,6 @@ public class DataSetManager : MonoBehaviour
     {
         StartCoroutine(FetchDataSets());
     }
-    //public void CloseDataset(DataModels.DataSet model, Action<bool> callback = null)
-    //{
-    //    if (dataSetInfos.TryGetValue(model.Id, out var info) && info.Loaded != null)
-    //    {
-    //        ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
-    //        objectTracker.Stop();
-
-    //        objectTracker.DeactivateDataSet(info.Loaded);
-    //        objectTracker.DestroyDataSet(info.Loaded, false);
-            
-
-    //        info.Loaded = null;
-
-    //        objectTracker.Start();
-    //    }
-    //}
 
     #endregion
 
@@ -188,6 +172,7 @@ public class DataSetManager : MonoBehaviour
             File.WriteAllBytes(path, request.downloadHandler.data);
 
             repository.CacheDataSet(model);
+            dataSetInfos[model.Id].Cache = model;
         }
     }
     private bool LoadInFile(DataModels.DataSet model)

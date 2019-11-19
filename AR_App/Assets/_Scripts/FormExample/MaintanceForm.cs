@@ -20,7 +20,9 @@ public class MaintanceForm : MonoBehaviour
 
     private void Start()
     {
-        var tab = new ContentTab_Model($"Form Test", null, null);
+        var tab = new ContentTab_Model($"Form Test", 
+            () => gameObject.SetActive(true), 
+            null);
 
         ContentTabBar.Instance.AddTab(tab);
     }
@@ -39,8 +41,13 @@ public class MaintanceForm : MonoBehaviour
             Cost = cost
         };
 
-        // API CALL
+        // ToDo - API CALL
         Debug.Log("Saved successfully.");
+
+        materialCostField.text = string.Empty;
+        personnelNameField.text = string.Empty;
+        descriptionField.text = string.Empty;
+        detailsOfRepairField.text = string.Empty;
     }
 
 

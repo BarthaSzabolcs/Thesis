@@ -10,11 +10,11 @@ public class DataSetManagerUI : MonoBehaviour
 {
     #region Show in editor
 
+    [Header("Components")]
     [SerializeField] private GameObject canvas;
     [SerializeField] private RectTransform panelTransform;
     [SerializeField] private GameObject menuItemPrefab;
     [SerializeField] private TextMeshProUGUI modeText;
-    [SerializeField] private Button menuButton;
 
     #endregion
     #region Hide in editor
@@ -23,23 +23,25 @@ public class DataSetManagerUI : MonoBehaviour
 
     #endregion
 
-    public void OpenMenu(IEnumerable<DataSetInfo_Model> dataSetInfos)
+    public void OpenMenu(IEnumerable<DataSetInfo_Model> items)
     {
-        modeText.text = ConnectionManager.Instance.ApiReachable ? "Online" : "Offline";
+        modeText.text = ConnectionManager.Instance.ApiReachable ? "Online Mode" : "Offline Mode";
 
-        PopulateMenu(dataSetInfos);
+        PopulateMenu(items);
 
         canvas.SetActive(true);
     }
 
-    private void PopulateMenu(IEnumerable<DataSetInfo_Model> dataSetInfos)
+    private void PopulateMenu(IEnumerable<DataSetInfo_Model> models)
     {
         ClearList();
 
-        foreach (var info in dataSetInfos)
+        foreach (var model in models)
         {
             var instance = Instantiate(menuItemPrefab, panelTransform);
-            instance.GetComponent<DataSetInfo_View>().Initialize(info);
+            var view = instance.GetComponent<DataSetInfo_View>();
+            view.Model = model;
+            view.canvasTransform = canvas.transform.parent;
         }
     }
     private void ClearList()

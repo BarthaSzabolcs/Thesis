@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2089147012
+CRC: 109135791
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: ae8b9ca310e14b7c974fa0fdc506efe0
+    Hash: f5e5828ce4bd7fba916f294d9fefed98
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 00bd501eddebfffc362ac4c228906a85
+    Hash: d9fe965a6b253fb9dbd3e1cb08b7d66f
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -17,29 +17,14 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 23
   Script: {instanceID: 0}
-- Class: 28
-  Script: {instanceID: 0}
 - Class: 33
   Script: {instanceID: 0}
 - Class: 43
   Script: {instanceID: 0}
 - Class: 48
   Script: {instanceID: 0}
-- Class: 50
-  Script: {instanceID: 0}
-- Class: 61
-  Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
-- Class: 114
-  Script: {fileID: 11500000, guid: 96c06207b24c3734597b6e0513b0c165, type: 3}
-- Class: 115
-  Script: {instanceID: 0}
-- Class: 212
-  Script: {instanceID: 0}
-- Class: 213
-  Script: {instanceID: 0}
 Assets:
-- Assets/_Prefabs/2D_Game.prefab
 - Assets/_Prefabs/Cube.prefab
 Dependencies: []

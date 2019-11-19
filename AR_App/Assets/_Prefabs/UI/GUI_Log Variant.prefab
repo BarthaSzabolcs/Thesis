@@ -305,6 +305,8 @@ MonoBehaviour:
   showException: 1
   showWarning: 1
   showDebug: 1
+  parseTags: 0
+  logTags: []
   callerMemberIndentation: 2
   callerMemberColor: {r: 0.5882497, g: 0.05900677, b: 0.735849, a: 1}
   consoleMessageColor: {r: 0.5882497, g: 0.05900677, b: 0.735849, a: 1}
@@ -452,6 +454,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3337034272457815569, guid: e386932562612a4469268bb9bc1a15c4,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3337034272320350082, guid: e386932562612a4469268bb9bc1a15c4,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -505,6 +512,11 @@ PrefabInstance:
     - target: {fileID: 4026033920514880103, guid: e386932562612a4469268bb9bc1a15c4,
         type: 3}
       propertyPath: m_ChildForceExpandWidth
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337034272324001245, guid: e386932562612a4469268bb9bc1a15c4,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

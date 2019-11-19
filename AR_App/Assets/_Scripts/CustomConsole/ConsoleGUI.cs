@@ -35,9 +35,9 @@ namespace CustomConsole
 
         [Header("Required Components")]
         [SerializeField] private TextMeshProUGUI logText;
-        [SerializeField] private Scrollbar scrollbar;
         [SerializeField] private RectTransform logTextTransform;
         [SerializeField] private RectTransform consoleTransform;
+        [SerializeField] private Image scrollbarHandle;
 
         #endregion
         #region Hide in editor
@@ -87,10 +87,12 @@ namespace CustomConsole
             if (consoleTransform.rect.height > 1)
             {
                 consoleTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
+                scrollbarHandle.enabled = false;
             }
             else
             {
                 consoleTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, viewportHeight);
+                scrollbarHandle.enabled = true;
             }
         }
 

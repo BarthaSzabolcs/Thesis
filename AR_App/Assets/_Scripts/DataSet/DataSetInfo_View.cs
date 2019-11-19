@@ -8,11 +8,12 @@ public class DataSetInfo_View : MonoBehaviour
 {
     #region Show in editor
 
-    [SerializeField] Button downloadButton;
-    [SerializeField] Button infoButton;
-    [SerializeField] Button loadButton;
+    [SerializeField] private Button downloadButton;
+    [SerializeField] private Button infoButton;
+    [SerializeField] private Button loadButton;
 
-    [SerializeField] TextMeshProUGUI name_text;
+    [SerializeField] private TextMeshProUGUI name_text;
+    [SerializeField] private GameObject detailsWindow;
 
     [Header("Icons:")]
     [SerializeField] private Sprite downloadIcon;
@@ -36,8 +37,12 @@ public class DataSetInfo_View : MonoBehaviour
                 value.PropertyChanged += HandlePropertyChanged;
             }
             model = value;
+
+            SyncWithModel();
         }
     }
+
+    public Transform canvasTransform { get; set; }
 
     #endregion
 
@@ -50,21 +55,19 @@ public class DataSetInfo_View : MonoBehaviour
 
     #endregion
 
-    public void Initialize(DataSetInfo_Model info)
+    public void SyncWithModel()
     {
-        Model = info;
-
-        var dataSet = info.Api ?? info.Cache;
+        var dataSet = Model.Api ?? Model.Cache;
 
         name_text.text = dataSet.Name;
 
-        loadButton.interactable = info.Loaded is null && info.Cache != null;
+        loadButton.interactable = Model.Loaded is null && Model.Cache != null;
 
         if (ConnectionManager.Instance.ApiReachable)
         {
-            if (info.Cache != null)
+            if (Model.Cache != null)
             {
-                if (info.Syncronised == false)
+                if (Model.Syncronised == false)
                 {
                     downloadButton.GetComponent<Image>().sprite = updateIcon;
                 }
@@ -79,8 +82,14 @@ public class DataSetInfo_View : MonoBehaviour
             downloadButton.gameObject.SetActive(false);
         }
 
+        downloadButton.onClick.RemoveAllListeners();
         downloadButton.onClick.AddListener(DownloadFile);
+
+        loadButton.onClick.RemoveAllListeners();
         loadButton.onClick.AddListener(LoadFile);
+
+        infoButton.onClick.RemoveAllListeners();
+        infoButton.onClick.AddListener(ShowInfo);
     }
 
     private void DownloadFile()
@@ -91,6 +100,13 @@ public class DataSetInfo_View : MonoBehaviour
     private void LoadFile()
     {
         DataSetManager.Instance.OpenDataset(model.Prefered);
+    }
+
+    private void ShowInfo()
+    {
+        var details = Instantiate(detailsWindow, canvasTransform).GetComponent<DataSetInfoDetails_View>();
+
+        details.Initialize(Model);
     }
 
     private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -108,7 +124,7 @@ public class DataSetInfo_View : MonoBehaviour
                 if (model.Syncronised)
                 {
                     downloadButton.GetComponent<Image>().sprite = downloadIcon;
-                    downloadButton.interactable = false;
+                    downloadButton.gameObject.SetActive(false);
                 }
                 break;
         }
