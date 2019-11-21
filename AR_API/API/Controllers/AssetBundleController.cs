@@ -36,13 +36,13 @@ namespace DemoAPI.Controllers
         [Route("{id}/File")]
         public HttpResponseMessage GetFile(int id, Platform platform)
         {
-            var repo = new FileAccesRepository<AssetBundle>(new MySqlConnectionFactory());
+            var repo = new FileAccesRepository<AssetBundle>(new MySqlConnectionFactory(), subFolder: platform.ToString());
             var result = new HttpResponseMessage(HttpStatusCode.NotFound);
 
             if (Enum.IsDefined(typeof(Platform), platform) == false)
                 return result;
 
-            var (data, name) = repo.GetFile(id, subFolder: platform.ToString());
+            var (data, name) = repo.GetFile(id);
 
             if (data != null)
             {

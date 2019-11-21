@@ -43,6 +43,7 @@ namespace AssetBundleManagment
         {
             StartCoroutine(FetchAssetBundles());
         }
+
         #endregion
 
         private IEnumerator FetchAssetBundles()
@@ -80,7 +81,8 @@ namespace AssetBundleManagment
             yield return apiRequest.SendWebRequest();
 
             var jsonResponse = apiRequest.downloadHandler.text;
-            var onlineBundles = JsonConvert.DeserializeObject<List<DataModels.AssetBundle>>(jsonResponse);
+            var onlineBundles = JsonConvert.DeserializeObject<List<DataModels.AssetBundle>>(jsonResponse, 
+                new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
 
             foreach (var bundle in onlineBundles)
             {

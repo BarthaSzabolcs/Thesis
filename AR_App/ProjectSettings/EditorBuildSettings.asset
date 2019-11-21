@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Scenes/LoadFromApi.unity
     guid: 70518d664af73c34d9f1ef35430d57cf
+  - enabled: 0
+    path: Assets/_Scenes/DllTest.unity
+    guid: 0bc903664d9264f488565faaabfd106d
   m_configObjects: {}

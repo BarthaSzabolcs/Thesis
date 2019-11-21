@@ -14,6 +14,7 @@ namespace DataAcces
         private DataTableInfo<RecognizedObject> recognizedObjectTable = new DataTableInfo<RecognizedObject>();
         private DataTableInfo<Content> contentTable = new DataTableInfo<Content>();
         private DataTableInfo<AssetBundle> assetBundleTable = new DataTableInfo<AssetBundle>();
+        private DataTableInfo<Dll> dllTable = new DataTableInfo<Dll>();
         private DataTableInfo<DataModels.DataSet> dataSetTable = new DataTableInfo<DataModels.DataSet>();
 
         public RecognizedObjectRepository()
@@ -25,6 +26,7 @@ namespace DataAcces
                     con.Execute(recognizedObjectTable.CreateCommand());
                     con.Execute(contentTable.CreateCommand());
                     con.Execute(assetBundleTable.CreateCommand());
+                    con.Execute(dllTable.CreateCommand());
                     con.Execute(dataSetTable.CreateCommand());
                 }
 
@@ -35,20 +37,25 @@ namespace DataAcces
         public RecognizedObjectResource GetRecognizedObject(int id)
         {
             var sql =
-            $@"SELECT * FROM RecognizedObject ro 
-            LEFT JOIN Content c ON c.Id = ro.ContentId
-            LEFT JOIN AssetBundle ab ON ab.Id = c.AssetBundleId
-            WHERE ro.Id = { id }";
+            $@"SELECT *
+
+            FROM RecognizedObject ro
+            LEFT JOIN Content c ON ro.ContentId = c.Id
+            LEFT JOIN AssetBundle a ON c.AssetBundleId = a.Id
+            LEFT JOIN Dll ON Dll.Id = c.DllId
+
+            WHERE ro.Id = {id}"; ;
 
             using (var con = Connection)
             {
-                return con.Query<RecognizedObjectResource, ContentResource, AssetBundle, RecognizedObjectResource>(
+                return con.Query<RecognizedObjectResource, ContentResource, Dll, AssetBundle, RecognizedObjectResource>(
                     sql: sql,
-                    (recognizedObject, content, assetBundle) =>
+                    (recognizedObject, content, dll, assetBundle) =>
                     {
                         if (content != null)
                         {
                             content.AssetBundle = assetBundle;
+                            content.Dll = dll;
                         }
                         recognizedObject.Content = content;
 

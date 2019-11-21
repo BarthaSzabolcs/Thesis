@@ -8,11 +8,16 @@ namespace DataAcces.Repositories.FileAcces
     public class FileAccesRepository<TModel> : SimpleRepository<TModel> 
         where TModel : class, IDataModel, IFileModel, new()
     {
-        public FileAccesRepository(IConnectionFactory connectionFactory) : base(connectionFactory)
+        private string extension;
+        private string subFolder;
+
+        public FileAccesRepository(IConnectionFactory connectionFactory, string extension = null, string subFolder = null) : base(connectionFactory)
         {
+            this.extension = extension;
+            this.subFolder = subFolder;
         }
 
-        public virtual (byte[] data, string name) GetFile(int id, string subFolder = null, string extension = null)
+        public virtual (byte[] data, string name) GetFile(int id)
         {
             (byte[] data, string name) result = (null, null);
 
@@ -35,7 +40,7 @@ namespace DataAcces.Repositories.FileAcces
 
         public virtual bool AddFile(TModel fileModel, byte[] fileData)
         {
-            var path = fileModel.FilePath();
+            var path = fileModel.FilePath(subFolder: subFolder, extension: extension);
 
             if (File.Exists(path) == false)
             {
@@ -56,9 +61,9 @@ namespace DataAcces.Repositories.FileAcces
             }
         }
 
-        public virtual bool DeleteFile(TModel bundle)
+        public virtual bool DeleteFile(TModel fileModel)
         {
-            var path = bundle.FilePath();
+            var path = fileModel.FilePath(subFolder: subFolder, extension: extension);
 
             if (File.Exists(path))
             {
@@ -81,7 +86,7 @@ namespace DataAcces.Repositories.FileAcces
 
         public virtual bool UpdateFile(TModel bundle, byte[] fileData)
         {
-            var path = bundle.FilePath();
+            var path = bundle.FilePath(subFolder: subFolder, extension: extension);
 
             try
             {

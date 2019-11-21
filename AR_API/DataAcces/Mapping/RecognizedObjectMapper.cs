@@ -21,15 +21,17 @@ namespace DataAcces.Mapping
             {
                 var contentDict = new Dictionary<int, ContentResource>();
                 var assetBundleDict = new Dictionary<int, AssetBundle>();
+                var dllDict = new Dictionary<int, Dll>();
 
-                return con.Query<RecognizedObjectResource, ContentResource, AssetBundle, RecognizedObjectResource>(
+                return con.Query<RecognizedObjectResource, ContentResource, AssetBundle, Dll, RecognizedObjectResource>(
                         sql,
-                        (recognizedObject, content, assetBundle) =>
+                        (recognizedObject, content, assetBundle, dll) =>
                         {
+                            dll = dllDict.GetCachedModel(dll);
                             assetBundle = assetBundleDict.GetCachedModel(assetBundle);
-                            content = contentDict.GetCachedModel(content.Map(assetBundle));
+                            content = contentDict.GetCachedModel(content.Map(assetBundle, dll));
 
-                            return recognizedObject.Map(content, assetBundle);
+                            return recognizedObject.Map(content);
                         },
                         param: param,
                         transaction: transaction);

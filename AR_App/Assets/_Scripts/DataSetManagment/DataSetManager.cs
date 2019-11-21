@@ -97,7 +97,8 @@ namespace DataSetManagment
             yield return apiRequest.SendWebRequest();
 
             var jsonResponse = apiRequest.downloadHandler.text;
-            var onlineSets = JsonConvert.DeserializeObject<List<DataModels.DataSet>>(jsonResponse);
+            var onlineSets = JsonConvert.DeserializeObject<List<DataModels.DataSet>>(jsonResponse, 
+                new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
 
             foreach (var set in onlineSets)
             {

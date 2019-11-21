@@ -80,8 +80,12 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
 
             if (recognizedObject != null)
             {
-                yield return AssetBundleManager.Instance.UseBundle(recognizedObject.Content.AssetBundle, LoadContent);
+                if (recognizedObject.Content?.Dll != null)
+                {
+                    yield return DllManager.Instance.DownloadFile(recognizedObject.Content.Dll);
+                }
 
+                yield return AssetBundleManager.Instance.UseBundle(recognizedObject.Content.AssetBundle, LoadContent);
             }
         }
     }
@@ -111,7 +115,8 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
             yield return request.SendWebRequest();
 
             var jsonResponse = request.downloadHandler.text;
-            recognizedObject = JsonConvert.DeserializeObject<RecognizedObjectResource>(jsonResponse);
+            recognizedObject = JsonConvert.DeserializeObject<RecognizedObjectResource>(jsonResponse,
+                new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
 
             repo.CacheRecognizedObject(recognizedObject);
         }

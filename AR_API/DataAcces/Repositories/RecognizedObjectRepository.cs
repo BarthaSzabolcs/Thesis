@@ -18,9 +18,10 @@ namespace DataAcces.Repositories
             string sql =
             @"SELECT *
 
-            FROM recognizedobject ro
-            LEFT JOIN content c ON ro.ContentId = c.Id
-            LEFT JOIN assetbundle a ON c.AssetBundleId = a.Id
+            FROM RecognizedObject ro
+            LEFT JOIN Content c ON ro.ContentId = c.Id
+            LEFT JOIN AssetBundle a ON c.AssetBundleId = a.Id
+            LEFT JOIN Dll ON Dll.Id = c.DllId
 
             ORDER By ro.Name";
 
@@ -32,34 +33,18 @@ namespace DataAcces.Repositories
         public override RecognizedObjectResource Get(int id)
         {
             string sql =
-            @"SELECT *
+            $@"SELECT *
 
-            FROM recognizedobject ro
-            LEFT JOIN content c ON ro.ContentId = c.Id
-            LEFT JOIN assetbundle a ON c.AssetBundleId = a.Id
+            FROM RecognizedObject ro
+            LEFT JOIN Content c ON ro.ContentId = c.Id
+            LEFT JOIN AssetBundle a ON c.AssetBundleId = a.Id
+            LEFT JOIN Dll ON Dll.Id = c.DllId
+
+            WHERE ro.Id = {id}";
             
-            WHERE ro.Id = {0}
-            
-            ORDER By ro.Name";
-
-            sql = string.Format(sql, id);
-
             var mapper = new RecognizedObjectMapper(connectionFactory);
 
             return mapper.MappedQuery(sql).FirstOrDefault();
         }
-
-        //public IEnumerable<RecognizedObjectResource> GetAllFiltered(int id = -1)
-        //{
-        //    var sql = "dunno";
-        //    var mapper = new RecognizedObjectMapper(connectionFactory);
-
-        //    var parameters = new
-        //    {
-        //        unitId = id
-        //    };
-
-        //    return mapper.MappedQuery(sql, parameters);
-        //}
     }
 }

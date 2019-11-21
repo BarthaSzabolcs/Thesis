@@ -2,12 +2,10 @@
 
 namespace DataModels
 {
-    public class Content : IDataModel
+    public class Dll : IDataModel, IFileModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int AssetBundleId { get; set; }
-        public int DllId { get; set; }
         public DateTime Modified { get; set; }
     }
 }

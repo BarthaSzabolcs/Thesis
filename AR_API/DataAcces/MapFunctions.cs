@@ -10,7 +10,7 @@ namespace DataAcces.Mapping.ExtensionMethods
 {
     public static class MapFunctions
     {
-        public static RecognizedObjectResource Map(this RecognizedObjectResource recognizedObject, ContentResource content, AssetBundle fileInfo)
+        public static RecognizedObjectResource Map(this RecognizedObjectResource recognizedObject, ContentResource content)
         {
             if (recognizedObject == null)
                 return null;
@@ -20,12 +20,14 @@ namespace DataAcces.Mapping.ExtensionMethods
             return recognizedObject;
         }
 
-        public static ContentResource Map(this ContentResource content, AssetBundle assetBundle)
+        public static ContentResource Map(this ContentResource content, AssetBundle assetBundle, Dll dll)
         {
             if (content == null)
                 return null;
 
             content.AssetBundle = assetBundle;
+            content.Dll = dll;
+
             return content;
         }
     }

@@ -622,6 +622,7 @@ GameObject:
   - component: {fileID: 7967272712578015431}
   - component: {fileID: 7967272712578015428}
   - component: {fileID: 4674444683408335504}
+  - component: {fileID: 59456394940735376}
   m_Layer: 5
   m_Name: MaintanceForm
   m_TagString: Untagged
@@ -738,12 +739,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e89964bd6079b74e8c910c9b32aee61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  postUrl: http://localhost:51460/Api/MaintanceLog
   personnelNameField: {fileID: 5608150394124388680}
   descriptionField: {fileID: 4466966569566195076}
   detailsOfRepairField: {fileID: 7040549331304013939}
   materialCostField: {fileID: 5074598579663143484}
   closeButton: {fileID: 7967272712313423366}
   sendButton: {fileID: 1060828802473922844}
+--- !u!114 &59456394940735376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4674444683408335505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1495455431, guid: bc4461479c5f0c84ab885844a593e22b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: This is the Shit, it's fucking works!!!
+  updateTime: 2
 --- !u!1 &4674444683538351357
 GameObject:
   m_ObjectHideFlags: 0
