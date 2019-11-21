@@ -44,14 +44,6 @@ public class DllManager : MonoBehaviour
         {
             ConsoleGUI.Instance.WriteLn($"Loading of assembly({ assembly.FullName }) failed.", Color.red);
         }
-        //var type = dll.GetType("UnityForm.Example");
-
-        //var instance = Activator.CreateInstance(type);
-        //var method = type.GetMethod("TestFunction");
-
-        //ConsoleGUI.Instance.WriteLn("Waaaaaiiiit for it!!!", Color.magenta);
-        //method.Invoke(instance, null);
-        //ConsoleGUI.Instance.WriteLn("Yeah, that's all... :d", Color.magenta);
     }
 
     public IEnumerator DownloadFile(Dll model, Action<Dll> callback = null)
@@ -72,6 +64,8 @@ public class DllManager : MonoBehaviour
             yield break;
         }
 
-        callback?.Invoke(model);
+        LoadDll(model);
+
+        //callback?.Invoke(model);
     }
 }

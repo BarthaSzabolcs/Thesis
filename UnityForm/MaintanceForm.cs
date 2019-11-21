@@ -1,4 +1,5 @@
 ﻿using ContentBar;
+using CustomConsole;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -74,7 +75,7 @@ namespace FormExample
             detailsOfRepairField.text = string.Empty;
 
             sendButton.interactable = true;
-            Debug.Log("Saved successfully.");
+            ConsoleGUI.Instance.WriteLn("Saved successfully. You are the best. ;)");
         }
     }
 }
