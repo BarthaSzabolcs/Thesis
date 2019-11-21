@@ -622,7 +622,6 @@ GameObject:
   - component: {fileID: 7967272712578015431}
   - component: {fileID: 7967272712578015428}
   - component: {fileID: 4674444683408335504}
-  - component: {fileID: 59456394940735376}
   m_Layer: 5
   m_Name: MaintanceForm
   m_TagString: Untagged
@@ -736,7 +735,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4674444683408335505}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1725627369, guid: bc4461479c5f0c84ab885844a593e22b, type: 3}
+  m_Script: {fileID: -1725627369, guid: 8f5dd53a7360b044bb82c4d4d5549761, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   postUrl: http://localhost:51460/Api/MaintanceLog
@@ -746,20 +745,6 @@ MonoBehaviour:
   materialCostField: {fileID: 5074598579663143484}
   closeButton: {fileID: 7967272712313423366}
   sendButton: {fileID: 1060828802473922844}
---- !u!114 &59456394940735376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4674444683408335505}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1495455431, guid: bc4461479c5f0c84ab885844a593e22b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  message: This is the Shit, it's fucking works!!!
-  updateTime: 2
 --- !u!1 &4674444683538351357
 GameObject:
   m_ObjectHideFlags: 0
@@ -1253,36 +1238,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: InputField_Details
       objectReference: {fileID: 0}
-    - target: {fileID: 3337341355119641111, guid: bb6cbd0016e864041a2819eb11f48bce,
-        type: 3}
-      propertyPath: m_LineType
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3337341355140848458, guid: bb6cbd0016e864041a2819eb11f48bce,
-        type: 3}
-      propertyPath: m_enableWordWrapping
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3337341355119641110, guid: bb6cbd0016e864041a2819eb11f48bce,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -350.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3337341355119641110, guid: bb6cbd0016e864041a2819eb11f48bce,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -32.050007
-      objectReference: {fileID: 0}
-    - target: {fileID: 3337341355119641110, guid: bb6cbd0016e864041a2819eb11f48bce,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 620.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3337341355119641110, guid: bb6cbd0016e864041a2819eb11f48bce,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 182.8
-      objectReference: {fileID: 0}
     - target: {fileID: 3337341354509886067, guid: bb6cbd0016e864041a2819eb11f48bce,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1388,6 +1343,51 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 3337341353819953956, guid: bb6cbd0016e864041a2819eb11f48bce,
+        type: 3}
+      propertyPath: m_text
+      value: 'In detail:'
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337341353819953956, guid: bb6cbd0016e864041a2819eb11f48bce,
+        type: 3}
+      propertyPath: m_textAlignment
+      value: 514
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337341353819953956, guid: bb6cbd0016e864041a2819eb11f48bce,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337341355119641111, guid: bb6cbd0016e864041a2819eb11f48bce,
+        type: 3}
+      propertyPath: m_LineType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337341355140848458, guid: bb6cbd0016e864041a2819eb11f48bce,
+        type: 3}
+      propertyPath: m_enableWordWrapping
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337341355119641110, guid: bb6cbd0016e864041a2819eb11f48bce,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -350.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337341355119641110, guid: bb6cbd0016e864041a2819eb11f48bce,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -32.050007
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337341355119641110, guid: bb6cbd0016e864041a2819eb11f48bce,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 620.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337341355119641110, guid: bb6cbd0016e864041a2819eb11f48bce,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 182.8
+      objectReference: {fileID: 0}
     - target: {fileID: 3337341353819953963, guid: bb6cbd0016e864041a2819eb11f48bce,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -1419,21 +1419,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: e80435f1600ed1b4da75f595ff7ca7cc,
         type: 3}
-    - target: {fileID: 3337341353819953956, guid: bb6cbd0016e864041a2819eb11f48bce,
-        type: 3}
-      propertyPath: m_text
-      value: 'In detail:'
-      objectReference: {fileID: 0}
-    - target: {fileID: 3337341353819953956, guid: bb6cbd0016e864041a2819eb11f48bce,
-        type: 3}
-      propertyPath: m_textAlignment
-      value: 514
-      objectReference: {fileID: 0}
-    - target: {fileID: 3337341353819953956, guid: bb6cbd0016e864041a2819eb11f48bce,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 10
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb6cbd0016e864041a2819eb11f48bce, type: 3}
 --- !u!114 &7040549331304013939 stripped
@@ -1613,21 +1598,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: InputField_Cost
       objectReference: {fileID: 0}
-    - target: {fileID: 3337341355119641111, guid: bb6cbd0016e864041a2819eb11f48bce,
-        type: 3}
-      propertyPath: m_ContentType
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3337341355119641111, guid: bb6cbd0016e864041a2819eb11f48bce,
-        type: 3}
-      propertyPath: m_KeyboardType
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3337341355119641111, guid: bb6cbd0016e864041a2819eb11f48bce,
-        type: 3}
-      propertyPath: m_CharacterValidation
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 3337341354509886067, guid: bb6cbd0016e864041a2819eb11f48bce,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1751,6 +1721,21 @@ PrefabInstance:
     - target: {fileID: 3337341353819953956, guid: bb6cbd0016e864041a2819eb11f48bce,
         type: 3}
       propertyPath: m_textInfo.wordCount
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337341355119641111, guid: bb6cbd0016e864041a2819eb11f48bce,
+        type: 3}
+      propertyPath: m_ContentType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337341355119641111, guid: bb6cbd0016e864041a2819eb11f48bce,
+        type: 3}
+      propertyPath: m_KeyboardType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3337341355119641111, guid: bb6cbd0016e864041a2819eb11f48bce,
+        type: 3}
+      propertyPath: m_CharacterValidation
       value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []

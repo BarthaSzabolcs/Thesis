@@ -8,6 +8,7 @@ using UnityEngine.Networking;
 using Vuforia;
 using CustomConsole;
 using AssetBundleManagment;
+using DllManagment;
 
 public class ContentHandler : MonoBehaviour, ITrackableEventHandler
 {
@@ -78,11 +79,11 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
         {
             yield return GetRecognizedObject(id);
 
-            if (recognizedObject != null)
+            if (recognizedObject?.Content != null)
             {
                 if (recognizedObject.Content?.Dll != null)
                 {
-                    yield return DllManager.Instance.DownloadFile(recognizedObject.Content.Dll);
+                    yield return DllManager.Instance.Load(recognizedObject.Content.Dll);
                 }
 
                 yield return AssetBundleManager.Instance.UseBundle(recognizedObject.Content.AssetBundle, LoadContent);
@@ -96,10 +97,6 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
         {
             var contentGO = assetBundle.LoadAsset(recognizedObject.Content.Name);
             Instantiate(contentGO, transform);
-        }
-        else
-        {
-            ConsoleGUI.Instance.WriteLn($"{recognizedObject.Name} failed to load AssetBundle.");
         }
     }
 

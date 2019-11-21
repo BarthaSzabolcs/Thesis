@@ -89,8 +89,6 @@ namespace DataSetManagment
         }
         private IEnumerator FetchDataSetsFromApi()
         {
-            Debug.Log("Load datasets from API.");
-
             var url = $"{ ConnectionManager.Instance.ApiUrl }/Api/DataSet";
             var apiRequest = UnityWebRequest.Get(url);
 
@@ -114,8 +112,6 @@ namespace DataSetManagment
         }
         private void FetchDataSetsFromCache()
         {
-            Debug.Log("Load datasets from device.");
-
             var cachedSets = repository.GetAll();
 
             foreach (var set in cachedSets)
@@ -137,8 +133,6 @@ namespace DataSetManagment
 
             if (ConnectionManager.Instance.ApiReachable)
             {
-                Debug.Log($"Loading DataSet { dataSet.Name } from API.");
-
                 if (File.Exists($"{url}.xml") == false || updateCache)
                 {
                     yield return DownloadFile(dataSet, true);
@@ -167,12 +161,17 @@ namespace DataSetManagment
 
             if (request.downloadHandler.data.Length > 0)
             {
-                var path = Path.Combine(CachePath, model.Name + (isXml ? ".xml" : ".dat"));
+                var extension = isXml ? ".xml" : ".dat";
+
+                var path = Path.Combine(CachePath, model.Name + extension);
 
                 File.WriteAllBytes(path, request.downloadHandler.data);
 
                 repository.Cache(model);
                 dataSetInfos[model.Id].Cache = model;
+
+                
+                ConsoleGUI.Instance.WriteLn($"Downloading of dataset file({ model.Name + extension}) succesful.", Color.green);
             }
         }
         private bool LoadInFile(DataModels.DataSet model)
@@ -193,19 +192,19 @@ namespace DataSetManagment
 
                 if (objectTracker.ActivateDataSet(info.Loaded) != false)
                 {
-                    Debug.Log($"DataSet { model.Name } activated.");
+                    ConsoleGUI.Instance.WriteLn($"Activation of dataset({ model.Name}) succesful.", Color.green);
                     success = true;
                 }
                 else
                 {
-                    Debug.LogError($"Could not activate DataSet { model.Name }.");
+                    ConsoleGUI.Instance.WriteLn($"Activation of dataset({ model.Name}) failed.", Color.red);
                 }
 
                 objectTracker.Start();
             }
             else
             {
-                Debug.LogError($"Loading DataSet { model.Name } failed.");
+                ConsoleGUI.Instance.WriteLn($"Loading of dataset({ model.Name}) failed.", Color.red);
             }
 
             return success;
@@ -227,7 +226,7 @@ namespace DataSetManagment
                     StartCoroutine(contentHandler.Initialize());
                 }
             }
+            ConsoleGUI.Instance.WriteLn($"Initializing of trackables for dataset({ model.Name}) succesful.", Color.green);
         }
-
     }
 }

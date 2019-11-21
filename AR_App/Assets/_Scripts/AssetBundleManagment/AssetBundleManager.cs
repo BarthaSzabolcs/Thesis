@@ -134,12 +134,12 @@ namespace AssetBundleManagment
                 info.LoadCallbacks.RemoveAt(0);
             }
         }
-        private IEnumerator DownloadFile(DataModels.AssetBundle assetBundle)
+        private IEnumerator DownloadFile(DataModels.AssetBundle model)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-            string url = $"{ ConnectionManager.Instance.ApiUrl }/Api/AssetBundle/{ assetBundle.Id }/File?platform=1";
+            string url = $"{ ConnectionManager.Instance.ApiUrl }/Api/AssetBundle/{ model.Id }/File?platform=1";
 #else
-            string url = $"{ ConnectionManager.Instance.ApiUrl }/Api/AssetBundle/{ assetBundle.Id }/File?platform=0";
+            string url = $"{ ConnectionManager.Instance.ApiUrl }/Api/AssetBundle/{ model.Id }/File?platform=0";
 #endif
             var apiRequest = UnityWebRequest.Get(url);
             yield return apiRequest.SendWebRequest();
@@ -147,11 +147,14 @@ namespace AssetBundleManagment
             var recievedData = apiRequest.downloadHandler.data;
             if (recievedData.Length > 0)
             {
-                url = Path.Combine(CachePath, assetBundle.Name);
+                url = Path.Combine(CachePath, model.Name);
                 File.WriteAllBytes(url, recievedData);
+
+                ConsoleGUI.Instance.WriteLn($"Downloading of assetbundle({ model.Name }) succesful.", Color.green);
             }
             else
             {
+                ConsoleGUI.Instance.WriteLn($"Downloading of assetbundle({ model.Name }) failed.", Color.red);
                 yield break;
             }
         }
@@ -163,8 +166,16 @@ namespace AssetBundleManagment
             
             assetBundleInfos[model.Id].Loaded = assetBundle;
 
+            if (assetBundle != null)
+            {
+                ConsoleGUI.Instance.WriteLn($"Loading of assetbundle({ model.Name }) succesful.", Color.green);
+            }
+            else
+            {
+                ConsoleGUI.Instance.WriteLn($"Loading of assetbundle({ model.Name }) failed.", Color.red);
+            }
+
             return assetBundle;
-            
         }
     }
 }

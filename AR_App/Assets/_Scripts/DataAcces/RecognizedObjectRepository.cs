@@ -15,7 +15,6 @@ namespace DataAcces
         private DataTableInfo<Content> contentTable = new DataTableInfo<Content>();
         private DataTableInfo<AssetBundle> assetBundleTable = new DataTableInfo<AssetBundle>();
         private DataTableInfo<Dll> dllTable = new DataTableInfo<Dll>();
-        private DataTableInfo<DataModels.DataSet> dataSetTable = new DataTableInfo<DataModels.DataSet>();
 
         public RecognizedObjectRepository()
         {
@@ -27,7 +26,6 @@ namespace DataAcces
                     con.Execute(contentTable.CreateCommand());
                     con.Execute(assetBundleTable.CreateCommand());
                     con.Execute(dllTable.CreateCommand());
-                    con.Execute(dataSetTable.CreateCommand());
                 }
 
                 uninitialized = false;
@@ -48,9 +46,9 @@ namespace DataAcces
 
             using (var con = Connection)
             {
-                return con.Query<RecognizedObjectResource, ContentResource, Dll, AssetBundle, RecognizedObjectResource>(
+                return con.Query<RecognizedObjectResource, ContentResource, AssetBundle, Dll, RecognizedObjectResource >(
                     sql: sql,
-                    (recognizedObject, content, dll, assetBundle) =>
+                    (recognizedObject, content, assetBundle, dll) =>
                     {
                         if (content != null)
                         {
@@ -82,6 +80,10 @@ namespace DataAcces
                 AssetBundleId = recognizedResource.Content.AssetBundle.Id,
                 Modified = recognizedResource.Content.Modified,
             };
+            if (recognizedResource.Content.Dll != null)
+            {
+                contentModel.DllId = recognizedResource.Content.Dll.Id;
+            }
 
             var assetBundleModel = new AssetBundle()
             {
@@ -90,11 +92,25 @@ namespace DataAcces
                 Modified = recognizedResource.Content.AssetBundle.Modified
             };
 
+            Dll dll = null;
+            if (recognizedResource.Content?.Dll != null)
+            {
+                dll = new Dll()
+                {
+                    Id = recognizedResource.Content.Dll.Id,
+                    Name = recognizedResource.Content.Dll.Name,
+                    Modified = recognizedResource.Content.Dll.Modified
+                };
+            }
+
             using (var con = Connection)
             {
                 con.Execute(recognizedObjectTable.InsertOrReplace(recognizedModel));
                 con.Execute(contentTable.InsertOrReplace(contentModel));
                 con.Execute(assetBundleTable.InsertOrReplace(assetBundleModel));
+
+                if (dll != null)
+                    con.Execute(dllTable.InsertOrReplace(dll));
             }
         }
     }
