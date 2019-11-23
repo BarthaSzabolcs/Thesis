@@ -10,11 +10,10 @@ public class CanvasShower : MonoBehaviour
 
     void Start()
     {
-        //var contentHandler = transform.parent.GetComponent<ContentHandler>();
-        //var cavasObject = Instantiate(canvas);
-        //cavasObject.SetActive(false);
-
-        //contentHandler.OnTrackingStart += () => cavasObject.SetActive(true);
+        var contentHandler = transform.parent.GetComponent<ContentHandler>();
         var cavasObject = Instantiate(canvas);
+        cavasObject.SetActive(false);
+
+        contentHandler.OnTrackingStart += () => cavasObject.SetActive(true);
     }
 }
