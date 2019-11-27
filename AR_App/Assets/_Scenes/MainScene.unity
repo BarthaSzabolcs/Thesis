@@ -437,9 +437,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b02b665e1e6de8248b40bc7bb491af8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connectionConfig: {fileID: 11400000, guid: 682ad2cde104ca34ab352756ceb48d65, type: 2}
+  connectionConfig: {fileID: 11400000, guid: d43643cac8190f845a723eeedc2bfcd9, type: 2}
   relativeCachePath: Cache.db
-  timeoutInSeconds: 2
+  timeoutInSeconds: 5
 --- !u!114 &276855245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -488,7 +488,7 @@ MonoBehaviour:
   minimizeOnStart: 1
   showException: 1
   showWarning: 1
-  showDebug: 1
+  showDebug: 0
   parseTags: 0
   logTags:
   - tag: succes

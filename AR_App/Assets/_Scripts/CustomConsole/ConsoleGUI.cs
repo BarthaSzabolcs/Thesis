@@ -24,7 +24,7 @@ namespace CustomConsole
         [SerializeField] ConsoleTag[] logTags;
 
         [Header("Format:")]
-        [SerializeField] private int callerMemberIndentation;
+        [SerializeField] private int indentation;
 
         [Header("   Colors:")]
         [SerializeField] private Color callerMemberColor;
@@ -42,7 +42,7 @@ namespace CustomConsole
         #endregion
         #region Hide in editor
 
-        public static ConsoleGUI Instance;
+        public static ConsoleGUI Instance { get; set; }
         private float viewportHeight;
 
         #endregion
@@ -55,7 +55,6 @@ namespace CustomConsole
             {
                 Instance = this;
                 WriteLn("================= Debug Logs =================", consoleMessageColor, "");
-                Debug.Log($"#succes# ...TEST...");
             }
             else
             {
@@ -114,11 +113,12 @@ namespace CustomConsole
         {
             if (callerFunction == string.Empty)
             {
-                logText.text += $"{ line.Color(color).Indent(callerMemberIndentation) }";
+                logText.text += $"{ line.Color(color).Indent(indentation) }";
             }
             else
             {
-                logText.text += $"{ callerFunction.Italic().Color(callerMemberColor) }\n{ line.Color(color).Indent(callerMemberIndentation) }";
+                logText.text += $"{ callerFunction.Italic().Color(callerMemberColor) }\n" +
+                                $"{ line.Color(color).Indent(indentation) }";
             }
 
             var size = logText.GetPreferredValues();
