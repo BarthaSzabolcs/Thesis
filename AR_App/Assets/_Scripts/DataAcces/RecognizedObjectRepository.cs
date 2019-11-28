@@ -32,7 +32,7 @@ namespace DataAcces
             }
         }
 
-        public RecognizedObjectResource GetRecognizedObject(int id)
+        public RecognizedObjectResource Get(int id)
         {
             var sql =
             $@"SELECT *
@@ -63,7 +63,7 @@ namespace DataAcces
             }
         }
 
-        public void CacheRecognizedObject(RecognizedObjectResource recognizedResource)
+        public void Cache(RecognizedObjectResource recognizedResource)
         {
             var recognizedModel = new RecognizedObject()
             {
@@ -72,19 +72,18 @@ namespace DataAcces
                 ContentId = recognizedResource.Content.Id,
                 Modified = recognizedResource.Modified
             };
-
             var contentModel = new Content()
             {
                 Id = recognizedResource.Content.Id,
                 Name = recognizedResource.Content.Name,
                 AssetBundleId = recognizedResource.Content.AssetBundle.Id,
-                Modified = recognizedResource.Content.Modified,
+                DllId = recognizedResource.Content.Dll.Id,
+                Modified = recognizedResource.Content.Modified
             };
             if (recognizedResource.Content.Dll != null)
             {
                 contentModel.DllId = recognizedResource.Content.Dll.Id;
             }
-
             var assetBundleModel = new AssetBundle()
             {
                 Id = recognizedResource.Content.AssetBundle.Id,

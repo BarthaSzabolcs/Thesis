@@ -115,11 +115,11 @@ public class ContentHandler : MonoBehaviour, ITrackableEventHandler
             recognizedObject = JsonConvert.DeserializeObject<RecognizedObjectResource>(jsonResponse,
                 new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
 
-            repo.CacheRecognizedObject(recognizedObject);
+            repo.Cache(recognizedObject);
         }
         else
         {
-            recognizedObject = repo.GetRecognizedObject(id);
+            recognizedObject = repo.Get(id);
         }
     }
 }
