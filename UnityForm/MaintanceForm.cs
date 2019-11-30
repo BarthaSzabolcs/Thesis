@@ -29,20 +29,12 @@ namespace FormExample
 
         private void Start()
         {
-            var tab = new ContentTab_Model($"Form Test",
-                () =>
-                {
-                    gameObject.SetActive(true);
-                },
-                null);
+            var tab = new ContentTab_Model($"Form Test", () => gameObject.SetActive(true), null);
 
             ContentTabBar.Instance.AddTab(tab);
+            closeButton.onClick.AddListener(() => ContentTabBar.Instance.ActiveTab = null);
 
             sendButton.onClick.AddListener(SaveForm);
-            closeButton.onClick.AddListener(() =>
-            {
-                ContentTabBar.Instance.ActiveTab = null;
-            });
         }
 
         #endregion
@@ -75,7 +67,7 @@ namespace FormExample
             detailsOfRepairField.text = string.Empty;
 
             sendButton.interactable = true;
-            ConsoleGUI.Instance.WriteLn("Saved successfully. You are the best. ;)");
+            ConsoleGUI.Instance.WriteLn("Saved successfully.");
         }
     }
 }

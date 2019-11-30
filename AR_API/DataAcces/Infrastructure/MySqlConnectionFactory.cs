@@ -8,7 +8,7 @@ namespace DataAcces.Infrastructure
     {
         public MySqlConnectionFactory()
         {
-            DapperExtensions.DapperExtensions.SqlDialect = new DapperExtensions.Sql.MySqlDialect();
+            DapperExtensions.DapperExtensions.SqlDialect = new MySqlDialect();
         }
 
         public IDbConnection Connection

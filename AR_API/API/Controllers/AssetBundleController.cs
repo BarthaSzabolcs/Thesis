@@ -36,7 +36,9 @@ namespace DemoAPI.Controllers
         [Route("{id}/File")]
         public HttpResponseMessage GetFile(int id, Platform platform)
         {
-            var repo = new FileAccesRepository<AssetBundle>(new MySqlConnectionFactory(), subFolder: platform.ToString());
+            var repo = new FileAccesRepository<AssetBundle>(new MySqlConnectionFactory(), 
+                subFolder: platform.ToString());
+
             var result = new HttpResponseMessage(HttpStatusCode.NotFound);
 
             if (Enum.IsDefined(typeof(Platform), platform) == false)
@@ -55,23 +57,19 @@ namespace DemoAPI.Controllers
 
                 result.StatusCode = HttpStatusCode.OK;
             }
-            else
-            {
-                result.StatusCode = HttpStatusCode.InternalServerError;
-            }
 
             return result;
         }
 
-        [HttpGet]
-        public IEnumerable<AssetBundle> GetAssetBundleByContentId(int contentId)
-        {
-            var repo = new SimpleRepository<AssetBundle>(con);
+        //[HttpGet]
+        //public IEnumerable<AssetBundle> GetAssetBundleByContentId(int contentId)
+        //{
+        //    var repo = new SimpleRepository<AssetBundle>(con);
 
-            var predicate = Predicates.Field<AssetBundle>(r => r.Id, Operator.Eq, contentId);
+        //    var predicate = Predicates.Field<AssetBundle>(r => r.Id, Operator.Eq, contentId);
 
-            return repo.GetAll(predicate);
-        }
+        //    return repo.GetAll(predicate);
+        //}
     }
 }
 

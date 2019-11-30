@@ -38,6 +38,14 @@ namespace ContentBar
                     open = value;
                     NotifyPropertyChanged();
                 }
+                if (value)
+                {
+                    OpenAction?.Invoke();
+                }
+                else
+                {
+                    CloseAction?.Invoke();
+                }
             }
         }
 
