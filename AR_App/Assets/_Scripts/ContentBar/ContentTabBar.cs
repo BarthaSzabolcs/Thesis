@@ -26,12 +26,10 @@ namespace ContentBar
             {
                 if (activeTab != null)
                 {
-                    activeTab.Model.CloseAction?.Invoke();
                     activeTab.Model.Open = false;
                 }
                 if (value != null)
                 {
-                    value.Model.OpenAction?.Invoke();
                     value.Model.Open = true;
                 }
 

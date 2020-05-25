@@ -22,22 +22,10 @@ namespace DataAcces.Repositories
         public virtual TResource Add(TResource resource)
         {
             throw new NotImplementedException();
-            //var repo = new SimpleRepository<TModel>(connectionFactory);
-
-            //var model = resource.ToDataModel<TResource, TModel>();
-            //model = repo.Add(model);
-
-            //resource.Id = model.Id;
-            //return resource;
         }
         public virtual bool Update(TResource resource)
         {
             throw new NotImplementedException();
-            //var repo = new SimpleRepository<TModel>(connectionFactory);
-
-            //var model = resource.ToDataModel<TResource, TModel>();
-
-            //return repo.Update(model);
         }
         public virtual bool Delete(int id)
         {

@@ -34,7 +34,7 @@ namespace DataAcces
 
         public IEnumerable<AssetBundle> GetAll()
         {
-            var sql = $"SELECT * FROM { assetBundleTable.TableName }";
+            var sql = assetBundleTable.SelectAllCommand();
 
             using (var con = ConnectionManager.Instance.CacheConnection)
             {

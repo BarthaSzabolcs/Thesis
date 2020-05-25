@@ -6,7 +6,7 @@ using System.Web.Http;
 
 namespace DemoAPI.Controllers
 {
-    public class RecognizedObjectController : ApiController //GenericController<RecognizedObject>
+    public class RecognizedObjectController : ApiController
     {
         public IEnumerable<RecognizedObjectResource> Get()
         {

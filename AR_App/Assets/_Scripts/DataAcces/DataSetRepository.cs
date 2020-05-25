@@ -31,7 +31,7 @@ namespace DataAcces
 
         public IEnumerable<DataSet> GetAll()
         {
-            var sql = $"SELECT * FROM { dataSetTable.TableName }";
+            var sql = dataSetTable.SelectAllCommand();
 
             using (var con = ConnectionManager.Instance.CacheConnection)
             {

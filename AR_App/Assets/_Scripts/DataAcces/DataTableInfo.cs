@@ -188,29 +188,21 @@ namespace DataAcces
 
             return result;
         }
-        private string UpsertUpdateCommand(T item)
-        {
-            var result = $"UPDATE SET ";
+        //private string UpsertUpdateCommand(T item)
+        //{
+        //    var result = $"UPDATE SET ";
 
-            for (int i = 0; i < coloumns.Count; i++)
-            {
-                result += $"{ coloumns[i].Key.Name } = excluded.{ coloumns[i].Key.Name }";
+        //    for (int i = 0; i < coloumns.Count; i++)
+        //    {
+        //        result += $"{ coloumns[i].Key.Name } = excluded.{ coloumns[i].Key.Name }";
 
-                if (i < coloumns.Count - 1)
-                {
-                    result += ", ";
-                }
-            }
+        //        if (i < coloumns.Count - 1)
+        //        {
+        //            result += ", ";
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
     }
 }
-
-// UPSERT
-
-// INSERT INTO RecognizedObject(Id, Name, ContentId, Modified)
-// VALUES(2,'Test_asd',2,'11/7/2019 12:06:26 PM')
-// ON CONFLICT(Id) DO
-// UPDATE
-// SET Id = excluded.Id, Name = excluded.Name, ContentId = excluded.ContentId, Modified = excluded.Modified

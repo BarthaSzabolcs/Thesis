@@ -25,22 +25,5 @@ namespace DataAcces.ExtensionMethods
 
             return Path.Combine(path, fileName);
         }
-
-        public static T GetCachedModel<T>(this Dictionary<int, T> dictionary, T dataModel) where T : IDataModel
-        {
-            if (dataModel != null)
-            {
-                if (dictionary.TryGetValue(dataModel.Id, out var cahcedDataModel))
-                {
-                    dataModel = cahcedDataModel;
-                }
-                else
-                {
-                    dictionary.Add(dataModel.Id, dataModel);
-                }
-            }
-
-            return dataModel;
-        }
     }
 }

@@ -75,7 +75,7 @@ namespace DataSetManagment
 
         #endregion
 
-        private IEnumerator FetchDataSets()
+        private IEnumerator FetchDataSets() 
         {
             yield return ConnectionManager.Instance.TestApiAcces();
 
@@ -215,8 +215,6 @@ namespace DataSetManagment
 
             foreach (TrackableBehaviour trackable in trackables)
             {
-                ConsoleGUI.Instance.WriteLn($"Loading Trackable '{ trackable.TrackableName }' succeded.");
-
                 if (trackable.name == "New Game Object")
                 {
                     trackable.gameObject.name = trackable.TrackableName;
@@ -224,8 +222,11 @@ namespace DataSetManagment
 
                     var contentHandler = trackable.gameObject.AddComponent<ContentHandler>();
                     StartCoroutine(contentHandler.Initialize());
+
+                    ConsoleGUI.Instance.WriteLn($"Loading Trackable '{ trackable.TrackableName }' succeded.", Color.green);
                 }
             }
+
             ConsoleGUI.Instance.WriteLn($"Initializing of trackables for dataset({ model.Name}) succesful.", Color.green);
         }
     }

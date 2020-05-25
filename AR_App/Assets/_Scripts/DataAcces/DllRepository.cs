@@ -34,7 +34,7 @@ namespace DataAcces
 
         public IEnumerable<Dll> GetAll()
         {
-            var sql = $"SELECT * FROM { dllTable.TableName }";
+            var sql = dllTable.SelectAllCommand();
 
             using (var con = ConnectionManager.Instance.CacheConnection)
             {

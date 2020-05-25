@@ -32,7 +32,6 @@ namespace DataSetManagment
 
             if (model.Cache != null && model.Api != null && model.Syncronised == false)
             {
-                switchButtonText.text = "Show online version";
                 switchButton.gameObject.SetActive(true);
                 this.model = model;
 
@@ -51,9 +50,6 @@ namespace DataSetManagment
             var textRect = descriptionText.GetComponent<RectTransform>();
 
             textRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
-            //textRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
-
-            // image.sprite = model.Image;
         }
 
         private void SwitchButtonClick()
@@ -62,13 +58,11 @@ namespace DataSetManagment
             {
                 SyncData(model.Cache);
                 showOfflineVersion = false;
-                switchButtonText.text = "Show online version";
             }
             else
             {
                 SyncData(model.Api);
                 showOfflineVersion = true;
-                switchButtonText.text = "Show offline version";
             }
         }
     }

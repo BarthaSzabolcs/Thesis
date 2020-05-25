@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using DataModels;
-using DataAcces.ExtensionMethods;
 using DataAcces.Infrastructure;
 using DataAcces.Mapping.ExtensionMethods;
 using DataResources;

@@ -10,6 +10,23 @@ namespace DataAcces.Mapping.ExtensionMethods
 {
     public static class MapFunctions
     {
+        public static T GetCachedModel<T>(this Dictionary<int, T> dictionary, T dataModel) where T : IDataModel
+        {
+            if (dataModel != null)
+            {
+                if (dictionary.TryGetValue(dataModel.Id, out var cahcedDataModel))
+                {
+                    dataModel = cahcedDataModel;
+                }
+                else
+                {
+                    dictionary.Add(dataModel.Id, dataModel);
+                }
+            }
+
+            return dataModel;
+        }
+
         public static RecognizedObjectResource Map(this RecognizedObjectResource recognizedObject, ContentResource content)
         {
             if (recognizedObject == null)
